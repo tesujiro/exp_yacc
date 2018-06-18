@@ -1,11 +1,8 @@
 %{
-package main
+package parser
 
 import (
-    "fmt"
     "text/scanner"
-    "os"
-    "strings"
     "strconv"
 )
 
@@ -42,7 +39,7 @@ program
     : expr
     {
         $$ = $1
-        yylex.(*Lexer).result = $$
+        yylex.(*Lexer).Result = $$
     }
 
 expr
@@ -59,7 +56,7 @@ expr
 
 type Lexer struct {
     scanner.Scanner
-    result Expression
+    Result Expression
 }
 
 func (l *Lexer) Lex(lval *yySymType) int {
@@ -91,9 +88,15 @@ func Eval(e Expression) int {
     return 0
 }
 
+func Parse(yylex yyLexer) int {
+    return yyParse(yylex)
+}
+
+/*
 func main() {
     l := new(Lexer)
     l.Init(strings.NewReader(os.Args[1]))
     yyParse(l)
     fmt.Printf("%#v\n", Eval(l.result))
 }
+*/
