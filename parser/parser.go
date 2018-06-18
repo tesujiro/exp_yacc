@@ -4,10 +4,12 @@ package parser
 
 import __yyfmt__ "fmt"
 
+import "github.com/tesujiro/exp_yacc/ast"
+
 type yySymType struct {
 	yys   int
-	token Token
-	expr  Expression
+	token ast.Token
+	expr  ast.Expression
 }
 
 type yyXError struct {
@@ -304,11 +306,11 @@ yynewstate:
 		}
 	case 2:
 		{
-			yyVAL.expr = NumExpr{literal: yyS[yypt-0].token.literal}
+			yyVAL.expr = ast.NumExpr{Literal: yyS[yypt-0].token.Literal}
 		}
 	case 3:
 		{
-			yyVAL.expr = BinOpExpr{left: yyS[yypt-2].expr, operator: '+', right: yyS[yypt-0].expr}
+			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: '+', Right: yyS[yypt-0].expr}
 		}
 
 	}

@@ -1,11 +1,13 @@
 %{
 package parser
 
+import "github.com/tesujiro/exp_yacc/ast"
+
 %}
 
 %union{
-    token Token
-    expr  Expression
+    token ast.Token
+    expr  ast.Expression
 }
 
 %type<expr> program
@@ -26,11 +28,11 @@ program
 expr
     : NUMBER
     {
-        $$ = NumExpr{literal: $1.literal}
+        $$ = ast.NumExpr{Literal: $1.Literal}
     }
     | expr '+' expr
     {
-        $$ = BinOpExpr{left: $1, operator: '+', right: $3}
+        $$ = ast.BinOpExpr{Left: $1, Operator: '+', Right: $3}
     }
 
 %%
