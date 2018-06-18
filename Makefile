@@ -1,4 +1,4 @@
 all : interpretor
 
 interpretor : interpretor.go
-	go build .
+	go build -o interpretor .
