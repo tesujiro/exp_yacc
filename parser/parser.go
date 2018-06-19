@@ -23,27 +23,30 @@ const (
 	yyErrCode = 57345
 
 	yyMaxDepth = 200
-	yyTabOfs   = -4
+	yyTabOfs   = -5
 )
 
 var (
 	yyPrec = map[int]int{
 		'+': 0,
+		'-': 1,
 	}
 
 	yyXLAT = map[int]int{
-		57344: 0, // $end (4x)
-		43:    1, // '+' (3x)
-		57348: 2, // expr (2x)
-		57346: 3, // NUMBER (2x)
-		57349: 4, // program (1x)
-		57347: 5, // $default (0x)
-		57345: 6, // error (0x)
+		57344: 0, // $end (5x)
+		43:    1, // '+' (4x)
+		45:    2, // '-' (4x)
+		57348: 3, // expr (3x)
+		57346: 4, // NUMBER (3x)
+		57349: 5, // program (1x)
+		57347: 6, // $default (0x)
+		57345: 7, // error (0x)
 	}
 
 	yySymNames = []string{
 		"$end",
 		"'+'",
+		"'-'",
 		"expr",
 		"NUMBER",
 		"program",
@@ -55,22 +58,25 @@ var (
 
 	yyReductions = map[int]struct{ xsym, components int }{
 		0: {0, 1},
-		1: {4, 1},
-		2: {2, 1},
-		3: {2, 3},
+		1: {5, 1},
+		2: {3, 1},
+		3: {3, 3},
+		4: {3, 3},
 	}
 
 	yyXErrors = map[yyXError]string{}
 
-	yyParseTab = [6][]uint8{
+	yyParseTab = [8][]uint8{
 		// 0
-		{2: 6, 7, 5},
-		{4},
-		{3, 8},
-		{2, 2},
-		{2: 9, 7},
+		{3: 7, 8, 6},
+		{5},
+		{4, 9, 10},
+		{3, 3, 3},
+		{3: 12, 8},
 		// 5
-		{1, 1},
+		{3: 11, 8},
+		{1, 1, 1},
+		{2, 2, 10},
 	}
 )
 
@@ -111,7 +117,7 @@ func yylex1(yylex yyLexer, lval *yySymType) (n int) {
 }
 
 func yyParse(yylex yyLexer) int {
-	const yyError = 6
+	const yyError = 7
 
 	yyEx, _ := yylex.(yyLexerEx)
 	var yyn int
@@ -311,6 +317,10 @@ yynewstate:
 	case 3:
 		{
 			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: '+', Right: yyS[yypt-0].expr}
+		}
+	case 4:
+		{
+			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: '-', Right: yyS[yypt-0].expr}
 		}
 
 	}
