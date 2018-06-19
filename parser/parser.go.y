@@ -14,8 +14,7 @@ import "github.com/tesujiro/exp_yacc/ast"
 %type<expr> expr
 %token<token> NUMBER
 
-%left '+'
-%left '-'
+%left '+' '-'
 
 %%
 
