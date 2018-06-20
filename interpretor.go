@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/tesujiro/exp_yacc/parser"
+	"github.com/tesujiro/exp_yacc/vm"
 )
 
 func main() {
@@ -13,5 +14,5 @@ func main() {
 	l.Init(strings.NewReader(os.Args[1]))
 	parser.Parse(l)
 	fmt.Printf("%#v\n", l.Result)
-	fmt.Printf("RESULT=%#v\n", parser.Eval(l.Result))
+	fmt.Printf("RESULT=%#v\n", vm.Eval(l.Result))
 }
