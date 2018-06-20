@@ -14,5 +14,9 @@ func main() {
 	l.Init(strings.NewReader(os.Args[1]))
 	parser.Parse(l)
 	fmt.Printf("%#v\n", l.Result)
-	fmt.Printf("RESULT=%#v\n", vm.Eval(l.Result))
+	if res, err := vm.Eval(l.Result); err != nil {
+		fmt.Printf("Eval error:%v\n", err)
+	} else {
+		fmt.Printf("RESULT=%#v\n", res)
+	}
 }
