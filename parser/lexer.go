@@ -20,6 +20,8 @@ func (l *Lexer) Lex(lval *yySymType) int {
 		token = NUMBER
 	case scanner.Float:
 		token = NUMBER
+	case scanner.Ident:
+		token = IDENT
 	}
 	lval.token = ast.Token{Token: token, Literal: l.TokenText()}
 	return token
