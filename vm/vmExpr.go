@@ -61,13 +61,13 @@ func Eval(e ast.Expression) (interface{}, error) {
 		lit := e.(ast.NumExpr).Literal
 		if strings.Contains(lit, ".") {
 			if f, err := strconv.ParseFloat(lit, 64); err != nil {
-				return 0.0, nil
+				return 0.0, err
 			} else {
 				return f, nil
 			}
 		}
 		if i, err := strconv.ParseInt(lit, 10, 64); err != nil {
-			return 0, nil
+			return 0, err
 		} else {
 			return i, nil
 		}
