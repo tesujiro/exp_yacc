@@ -1,6 +1,6 @@
 package ast
 
-type Expression interface{}
+type Expr interface{}
 
 type IdentExpr struct {
 	Literal string
@@ -11,7 +11,7 @@ type NumExpr struct {
 }
 
 type BinOpExpr struct {
-	Left     Expression
+	Left     Expr
 	Operator rune
-	Right    Expression
+	Right    Expr
 }

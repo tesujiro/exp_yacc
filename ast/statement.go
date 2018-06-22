@@ -3,10 +3,10 @@ package ast
 type Statement interface{}
 
 type AssStmt struct {
-	Left  Expression
-	Right Expression
+	Left  Expr
+	Right Expr
 }
 
 type ExprStmt struct {
-	Expr Expression
+	Expr Expr
 }

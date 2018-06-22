@@ -18,7 +18,7 @@ func toFloat64(lit interface{}) float64 {
 	return f
 }
 
-func Eval(e ast.Expression) (interface{}, error) {
+func Eval(e ast.Expr) (interface{}, error) {
 	switch e.(type) {
 	case ast.BinOpExpr:
 		var left, right interface{}

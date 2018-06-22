@@ -9,7 +9,7 @@ import "github.com/tesujiro/exp_yacc/ast"
 type yySymType struct {
 	yys   int
 	token ast.Token
-	expr  ast.Expression
+	expr  ast.Expr
 	stmt  ast.Statement
 }
 
