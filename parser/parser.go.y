@@ -8,7 +8,7 @@ import "github.com/tesujiro/exp_yacc/ast"
 %union{
     token ast.Token
     expr  ast.Expr
-    stmt  ast.Statement
+    stmt  ast.Stmt
 }
 
 %type<expr> program

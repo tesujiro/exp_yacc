@@ -10,7 +10,7 @@ type yySymType struct {
 	yys   int
 	token ast.Token
 	expr  ast.Expr
-	stmt  ast.Statement
+	stmt  ast.Stmt
 }
 
 type yyXError struct {

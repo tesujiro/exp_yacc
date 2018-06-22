@@ -1,6 +1,6 @@
 package ast
 
-type Statement interface{}
+type Stmt interface{}
 
 type AssStmt struct {
 	Left  Expr

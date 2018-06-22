@@ -18,18 +18,32 @@ func toFloat64(lit interface{}) float64 {
 	return f
 }
 
-func Eval(e ast.Expr) (interface{}, error) {
-	switch e.(type) {
+func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
+	switch expr.(type) {
+	case ast.IdentExpr:
+		id := expr.(ast.IdentExpr).Literal
+		if val, err := env.Get(id); err != nil {
+			return nil, nil
+		} else {
+			return val, nil
+		}
 	case ast.BinOpExpr:
 		var left, right interface{}
 		var err error
-		if left, err = Eval(e.(ast.BinOpExpr).Left); err != nil {
+		if left, err = evalExpr(expr.(ast.BinOpExpr).Left, env); err != nil {
 			return nil, err
 		}
-		if right, err = Eval(e.(ast.BinOpExpr).Right); err != nil {
+		if right, err = evalExpr(expr.(ast.BinOpExpr).Right, env); err != nil {
 			return nil, err
 		}
-		switch e.(ast.BinOpExpr).Operator {
+		if left == nil && right == nil {
+			return 0, nil
+		} else if left == nil {
+			return right, nil
+		} else if right == nil {
+			return left, nil
+		}
+		switch expr.(ast.BinOpExpr).Operator {
 		case '+':
 			l_kind := reflect.TypeOf(left).Kind()
 			r_kind := reflect.TypeOf(right).Kind()
@@ -58,7 +72,7 @@ func Eval(e ast.Expr) (interface{}, error) {
 			}
 		}
 	case ast.NumExpr:
-		lit := e.(ast.NumExpr).Literal
+		lit := expr.(ast.NumExpr).Literal
 		if strings.Contains(lit, ".") {
 			if f, err := strconv.ParseFloat(lit, 64); err != nil {
 				return 0.0, err
