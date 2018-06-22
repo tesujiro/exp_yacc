@@ -14,7 +14,7 @@ func TestEnv(t *testing.T) {
 	}
 	for _, c := range cases {
 		e := NewEnv()
-		if err := e.Set(c.k, c.v); err != nil {
+		if err := e.Define(c.k, c.v); err != nil {
 			t.Errorf("Env.Set error :%v", err)
 			continue
 		} else if actual, err := e.Get(c.k); err != nil {
