@@ -6,10 +6,10 @@ go:
 env:
 
 before_install:
-  - if [[ "$TRAVIS_GO_VERSION" =~ ^1\.(1[0-9]|[8-9])\.[0-9]$ ]]; then go get -u github.com/haya14busa/goverage; go get -u github/tesujiro/yacc_exp ; fi
+  - go get -u github.com/haya14busa/goverage; go get -u github/tesujiro/yacc_exp ; 
 
 script:
-  - if [[ "$TRAVIS_GO_VERSION" =~ ^1\.(1[0-9]|[8-9])\.[0-9]$ ]]; then goverage -v -coverprofile=coverage.txt -covermode=count . ./vm ; fi 
+  - go test -v -coverprofile=coverage.txt -covermode=count . ./vm  
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
