@@ -10,7 +10,19 @@ import (
 	"github.com/tesujiro/exp_yacc/vm"
 )
 
+var tty *os.File
+
 func main() {
+	tty, err := os.Open(`/dev/tty`)
+	if err != nil {
+		panic(err)
+	}
+	defer tty.Close()
+
+	run()
+}
+
+func run() {
 	//l := new(parser.Lexer)
 	//l.Init(strings.NewReader(os.Args[1]))
 	env := vm.NewEnv()
@@ -29,13 +41,13 @@ func main() {
 		l := new(parser.Lexer)
 		l.Init(strings.NewReader(source))
 		parser.Parse(l)
-		fmt.Printf("%#v\n", l.Result)
+		fmt.Fprintf(tty, "%#v\n", l.Result)
 		//TODO: Error Check
 		if res, err := vm.Run(l.Result, env); err != nil {
 			fmt.Printf("Eval error:%v\n", err)
 		} else {
-			fmt.Printf("ENV=%#v\n", env)
-			fmt.Printf("RESULT=%#v\n", res)
+			fmt.Fprintf(tty, "ENV=%#v\n", env)
+			fmt.Printf("%#v\n", res)
 		}
 		source = ""
 	}
