@@ -1,10 +1,6 @@
 language: go
 
 go:
-  - 1.6.x
-  - 1.7.x
-  - 1.8.x
-  - 1.9.x
   - 1.10.x
 
 env:
@@ -13,7 +9,7 @@ before_install:
   - if [[ "$TRAVIS_GO_VERSION" =~ ^1\.(1[0-9]|[8-9])\.[0-9]$ ]]; then go get -u github.com/haya14busa/goverage; fi
 
 script:
-  - if [[ "$TRAVIS_GO_VERSION" =~ ^1\.(1[0-9]|[8-9])\.[0-9]$ ]]; then goverage -v -coverprofile=coverage.txt -covermode=count . ./vm ; else go test -v github.com/tesujiro/exp_yacc ; go test -v -coverprofile=coverage.txt -covermode=count github.com/tesujiro/yacc_exp/vm; fi
+  - if [[ "$TRAVIS_GO_VERSION" =~ ^1\.(1[0-9]|[8-9])\.[0-9]$ ]]; then goverage -v -coverprofile=coverage.txt -covermode=count . ./vm ; else go test -v github.com/tesujiro/exp_yacc ; fi 
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
