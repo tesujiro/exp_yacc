@@ -8,13 +8,12 @@ import (
 
 type Lexer struct {
 	scanner.Scanner
-	Result ast.Expr
+	//Result ast.Expr
+	Result []ast.Stmt
 }
 
 func (l *Lexer) Lex(lval *yySymType) int {
 	token := int(l.Scan())
-	//if token == scanner.Int {
-	//}
 	switch token {
 	case scanner.Int:
 		token = NUMBER
@@ -24,6 +23,7 @@ func (l *Lexer) Lex(lval *yySymType) int {
 		token = IDENT
 	}
 	lval.token = ast.Token{Token: token, Literal: l.TokenText()}
+	//fmt.Printf("token=%#v\n", lval.token)
 	return token
 }
 
@@ -32,5 +32,6 @@ func (l *Lexer) Error(e string) {
 }
 
 func Parse(yylex yyLexer) int {
+	//fmt.Println("Parse")
 	return yyParse(yylex)
 }

@@ -11,6 +11,7 @@ type yySymType struct {
 	token ast.Token
 	expr  ast.Expr
 	stmt  ast.Stmt
+	stmts []ast.Stmt
 }
 
 type yyXError struct {
@@ -25,41 +26,56 @@ const (
 	yyErrCode = 57345
 
 	yyMaxDepth = 200
-	yyTabOfs   = -8
+	yyTabOfs   = -18
 )
 
 var (
 	yyPrec = map[int]int{
-		'=':   0,
-		IDENT: 1,
-		'+':   2,
-		'-':   2,
+		';':   0,
+		'=':   1,
+		IDENT: 2,
+		'+':   3,
+		'-':   3,
 	}
 
 	yyXLAT = map[int]int{
-		57344: 0,  // $end (8x)
-		43:    1,  // '+' (6x)
-		45:    2,  // '-' (6x)
-		61:    3,  // '=' (5x)
-		57349: 4,  // expr (4x)
-		57346: 5,  // IDENT (4x)
-		57347: 6,  // NUMBER (4x)
-		57350: 7,  // program (1x)
-		57351: 8,  // stmt (1x)
-		57348: 9,  // $default (0x)
-		57345: 10, // error (0x)
+		57344: 0,  // $end (18x)
+		10:    1,  // '\n' (16x)
+		57346: 2,  // IDENT (13x)
+		57347: 3,  // NUMBER (13x)
+		59:    4,  // ';' (10x)
+		43:    5,  // '+' (6x)
+		45:    6,  // '-' (6x)
+		61:    7,  // '=' (5x)
+		57349: 8,  // expr (5x)
+		57350: 9,  // newLine (5x)
+		57351: 10, // newLines (3x)
+		57352: 11, // opt_term (2x)
+		57354: 12, // stmt (2x)
+		57356: 13, // term (2x)
+		57353: 14, // program (1x)
+		57355: 15, // stmts (1x)
+		57348: 16, // $default (0x)
+		57345: 17, // error (0x)
 	}
 
 	yySymNames = []string{
 		"$end",
+		"'\\n'",
+		"IDENT",
+		"NUMBER",
+		"';'",
 		"'+'",
 		"'-'",
 		"'='",
 		"expr",
-		"IDENT",
-		"NUMBER",
-		"program",
+		"newLine",
+		"newLines",
+		"opt_term",
 		"stmt",
+		"term",
+		"program",
+		"stmts",
 		"$default",
 		"error",
 	}
@@ -67,34 +83,58 @@ var (
 	yyTokenLiteralStrings = map[int]string{}
 
 	yyReductions = map[int]struct{ xsym, components int }{
-		0: {0, 1},
-		1: {7, 1},
-		2: {8, 3},
-		3: {8, 1},
-		4: {4, 1},
-		5: {4, 1},
-		6: {4, 3},
-		7: {4, 3},
+		0:  {0, 1},
+		1:  {14, 2},
+		2:  {15, 2},
+		3:  {15, 3},
+		4:  {12, 3},
+		5:  {12, 1},
+		6:  {8, 1},
+		7:  {8, 1},
+		8:  {8, 3},
+		9:  {8, 3},
+		10: {11, 0},
+		11: {11, 1},
+		12: {13, 2},
+		13: {13, 1},
+		14: {13, 1},
+		15: {10, 1},
+		16: {10, 2},
+		17: {9, 1},
 	}
 
 	yyXErrors = map[yyXError]string{}
 
-	yyParseTab = [12][]uint8{
+	yyParseTab = [24][]uint8{
 		// 0
-		{4: 11, 12, 13, 9, 10},
-		{8},
-		{7},
-		{5, 15, 16, 14},
-		{4, 4, 4, 4},
+		{1: 26, 8, 8, 23, 9: 25, 24, 21, 13: 22, 19, 20},
+		{18},
+		{8, 26, 4: 23, 9: 25, 24, 39, 13: 40},
+		{2: 31, 32, 8: 30, 12: 29},
+		{2: 7, 7},
 		// 5
+		{4, 26, 4, 4, 9: 25, 28},
+		{5, 26, 5, 5, 9: 27},
 		{3, 3, 3, 3},
-		{4: 19, 12, 13},
-		{4: 18, 12, 13},
-		{4: 17, 12, 13},
 		{1, 1, 1, 1},
-		// 10
 		{2, 2, 2, 2},
-		{6, 15, 16},
+		// 10
+		{6, 26, 6, 6, 9: 27},
+		{16, 16, 4: 16},
+		{13, 13, 4: 13, 34, 35, 33},
+		{12, 12, 4: 12, 12, 12, 12},
+		{11, 11, 4: 11, 11, 11, 11},
+		// 15
+		{2: 31, 32, 8: 38},
+		{2: 31, 32, 8: 37},
+		{2: 31, 32, 8: 36},
+		{9, 9, 4: 9, 9, 9, 9},
+		{10, 10, 4: 10, 10, 10, 10},
+		// 20
+		{14, 14, 4: 14, 34, 35},
+		{17},
+		{7, 2: 31, 32, 8: 30, 12: 41},
+		{15, 15, 4: 15},
 	}
 )
 
@@ -135,7 +175,7 @@ func yylex1(yylex yyLexer, lval *yySymType) (n int) {
 }
 
 func yyParse(yylex yyLexer) int {
-	const yyError = 10
+	const yyError = 17
 
 	yyEx, _ := yylex.(yyLexerEx)
 	var yyn int
@@ -325,30 +365,38 @@ yynewstate:
 	switch r {
 	case 1:
 		{
-			yyVAL.expr = yyS[yypt-0].stmt
-			yylex.(*Lexer).Result = yyVAL.expr
+			yyVAL.stmts = yyS[yypt-1].stmts
+			yylex.(*Lexer).Result = yyVAL.stmts
 		}
 	case 2:
 		{
-			yyVAL.stmt = ast.AssStmt{Left: yyS[yypt-2].expr, Right: yyS[yypt-0].expr}
+			yyVAL.stmts = []ast.Stmt{yyS[yypt-0].stmt}
 		}
 	case 3:
 		{
-			yyVAL.stmt = ast.ExprStmt{Expr: yyS[yypt-0].expr}
+			yyVAL.stmts = append(yyS[yypt-2].stmts, yyS[yypt-0].stmt)
 		}
 	case 4:
 		{
-			yyVAL.expr = ast.IdentExpr{Literal: yyS[yypt-0].token.Literal}
+			yyVAL.stmt = ast.AssStmt{Left: yyS[yypt-2].expr, Right: yyS[yypt-0].expr}
 		}
 	case 5:
 		{
-			yyVAL.expr = ast.NumExpr{Literal: yyS[yypt-0].token.Literal}
+			yyVAL.stmt = ast.ExprStmt{Expr: yyS[yypt-0].expr}
 		}
 	case 6:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: '+', Right: yyS[yypt-0].expr}
+			yyVAL.expr = ast.IdentExpr{Literal: yyS[yypt-0].token.Literal}
 		}
 	case 7:
+		{
+			yyVAL.expr = ast.NumExpr{Literal: yyS[yypt-0].token.Literal}
+		}
+	case 8:
+		{
+			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: '+', Right: yyS[yypt-0].expr}
+		}
+	case 9:
 		{
 			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: '-', Right: yyS[yypt-0].expr}
 		}

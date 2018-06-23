@@ -42,6 +42,7 @@ func (e *Env) Define(k string, v interface{}) error {
 }
 
 func (e *Env) Get(k string) (interface{}, error) {
+	//fmt.Printf("Get(%#v)\n", k)
 	if v, ok := e.env[k]; ok {
 		return v, nil
 	}

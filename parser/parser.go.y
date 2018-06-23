@@ -9,25 +9,38 @@ import "github.com/tesujiro/exp_yacc/ast"
     token ast.Token
     expr  ast.Expr
     stmt  ast.Stmt
+    stmts []ast.Stmt
 }
 
-%type<expr> program
-%type<expr> expr
-%type<stmt> stmt
+%type<stmts>  program
+%type<stmts>  stmts
+%type<stmt>   stmt
+%type<expr>   expr
 %token<token> IDENT NUMBER
 
+%left ';'
 %right '='
 %left IDENT
 %left '+' '-'
+//: expr
 
 %%
 
-    //: expr
 program
-    : stmt
+    : stmts opt_term
     {
         $$ = $1
         yylex.(*Lexer).Result = $$
+    }
+
+stmts
+    : opt_term stmt
+    {
+        $$ = []ast.Stmt{$2}
+    }
+    | stmts term stmt
+    {
+        $$ = append($1,$3)
     }
 
 stmt
@@ -57,5 +70,21 @@ expr
     {
         $$ = ast.BinOpExpr{Left: $1, Operator: '-', Right: $3}
     }
+
+opt_term
+    : /* nothing */
+    | term
+
+term
+    : ';' newLines
+    | newLines
+    | ';'
+
+newLines
+    : newLine
+    | newLines newLine
+
+newLine
+    : '\n'
 
 %%

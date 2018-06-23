@@ -12,9 +12,12 @@ import (
 func main() {
 	l := new(parser.Lexer)
 	l.Init(strings.NewReader(os.Args[1]))
+	env := vm.NewEnv()
+
+	//l.Init(os.Stdin)
+	//for parser.Parse(l) >= 0 {
 	parser.Parse(l)
 	fmt.Printf("%#v\n", l.Result)
-	env := vm.NewEnv()
 	if res, err := vm.Run(l.Result, env); err != nil {
 		fmt.Printf("Eval error:%v\n", err)
 	} else {

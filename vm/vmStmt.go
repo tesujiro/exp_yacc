@@ -4,12 +4,18 @@ import (
 	"github.com/tesujiro/exp_yacc/ast"
 )
 
-func Run(stmt ast.Stmt, env *Env) (interface{}, error) {
-	switch stmt.(type) {
-	case ast.AssStmt:
-		return evalAssExpr(stmt.(ast.AssStmt).Left, stmt.(ast.AssStmt).Right, env)
+func Run(stmts []ast.Stmt, env *Env) (interface{}, error) {
+	var result interface{}
+	var err error
+	for _, stmt := range stmts {
+		switch stmt.(type) {
+		case ast.AssStmt:
+			result, err = evalAssExpr(stmt.(ast.AssStmt).Left, stmt.(ast.AssStmt).Right, env)
+		case ast.ExprStmt:
+			result, err = evalExpr(stmt.(ast.ExprStmt).Expr, env)
+		}
 	}
-	return 0, nil
+	return result, err
 }
 
 func evalAssExpr(lexp ast.Expr, rexp ast.Expr, env *Env) (interface{}, error) {
