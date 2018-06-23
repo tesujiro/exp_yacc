@@ -18,11 +18,10 @@ import "github.com/tesujiro/exp_yacc/ast"
 %type<expr>   expr
 %token<token> IDENT NUMBER
 
-%left ';'
+%left ';' '\n'
 %right '='
 %left IDENT
 %left '+' '-'
-//: expr
 
 %%
 
