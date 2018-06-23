@@ -32,6 +32,7 @@ const (
 var (
 	yyPrec = map[int]int{
 		';':   0,
+		'\n':  0,
 		'=':   1,
 		IDENT: 2,
 		'+':   3,
