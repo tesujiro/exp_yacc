@@ -6,10 +6,11 @@ go:
 env:
 
 before_install:
-  - go get -u github.com/haya14busa/goverage; go get -u github.com/tesujiro/yacc_exp ; 
+ #- go get -u github.com/haya14busa/goverage
+  - go get -u github.com/tesujiro/exp_yacc
 
 script:
   - go test -v -coverprofile=coverage.txt -covermode=count . ./vm  
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  #- bash <(curl -s https://codecov.io/bash)
