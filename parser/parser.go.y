@@ -16,11 +16,14 @@ import "github.com/tesujiro/exp_yacc/ast"
 %type<stmts>  stmts
 %type<stmt>   stmt
 %type<expr>   expr
-%token<token> IDENT NUMBER
+%token<token> IDENT NUMBER EQEQ NEQ GE LE
 
 %left ';' '\n'
 %right '='
 %left IDENT
+%left EQEQ NEQ
+%left '>' '<' GE LE
+
 %left '+' '-'
 
 %%
@@ -63,11 +66,35 @@ expr
     }
     | expr '+' expr
     {
-        $$ = ast.BinOpExpr{Left: $1, Operator: '+', Right: $3}
+        $$ = ast.BinOpExpr{Left: $1, Operator: "+", Right: $3}
     }
     | expr '-' expr
     {
-        $$ = ast.BinOpExpr{Left: $1, Operator: '-', Right: $3}
+        $$ = ast.BinOpExpr{Left: $1, Operator: "-", Right: $3}
+    }
+    | expr EQEQ expr
+    {
+        $$ = ast.BinOpExpr{Left: $1, Operator: "==", Right: $3}
+    }
+    | expr NEQ expr
+    {
+        $$ = ast.BinOpExpr{Left: $1, Operator: "!=", Right: $3}
+    }
+    | expr '>' expr
+    {
+        $$ = ast.BinOpExpr{Left: $1, Operator: ">", Right: $3}
+    }
+    | expr '<' expr
+    {
+        $$ = ast.BinOpExpr{Left: $1, Operator: "<", Right: $3}
+    }
+    | expr GE expr
+    {
+        $$ = ast.BinOpExpr{Left: $1, Operator: ">=", Right: $3}
+    }
+    | expr LE expr
+    {
+        $$ = ast.BinOpExpr{Left: $1, Operator: "<=", Right: $3}
     }
 
 opt_term

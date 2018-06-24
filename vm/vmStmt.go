@@ -33,6 +33,9 @@ func evalAssExpr(lexp ast.Expr, rexp ast.Expr, env *Env) (interface{}, error) {
 		if err := env.Set(id, rv); err != nil {
 			env.Define(id, rv)
 		}
+	default:
+		// TODO:?
+		//return nil,fmt.Er
 	}
 	return rv, nil
 }

@@ -12,6 +12,6 @@ type NumExpr struct {
 
 type BinOpExpr struct {
 	Left     Expr
-	Operator rune
+	Operator string
 	Right    Expr
 }

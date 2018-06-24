@@ -8,13 +8,18 @@ import (
 	"github.com/tesujiro/exp_yacc/ast"
 )
 
-func toInt64(lit interface{}) int64 {
-	i, _ := lit.(int64)
+func toInt64(val interface{}) int64 {
+	i, _ := val.(int64)
 	return i
 }
 
-func toFloat64(lit interface{}) float64 {
-	f, _ := lit.(float64)
+func toFloat64(val interface{}) float64 {
+	switch reflect.TypeOf(val).Kind() {
+	case reflect.Int64, reflect.Int32, reflect.Int16, reflect.Int8, reflect.Int:
+		return float64(val.(int64))
+		//return float64(reflect.ValueOf(val).Int())
+	}
+	f, _ := val.(float64)
 	return f
 }
 
@@ -23,7 +28,7 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 	case ast.IdentExpr:
 		id := expr.(ast.IdentExpr).Literal
 		if val, err := env.Get(id); err != nil {
-			return nil, nil
+			return nil, err
 		} else {
 			return val, nil
 		}
@@ -36,6 +41,7 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 		if right, err = evalExpr(expr.(ast.BinOpExpr).Right, env); err != nil {
 			return nil, err
 		}
+		//TODO: checking type  "a==1"
 		if left == nil && right == nil {
 			return 0, nil
 		} else if left == nil {
@@ -44,7 +50,21 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 			return left, nil
 		}
 		switch expr.(ast.BinOpExpr).Operator {
-		case '+':
+		case "==":
+			return left == right, nil
+		case "!=":
+			return left != right, nil
+		case ">":
+			//fmt.Printf("toFloat(left)=%#v\n", toFloat64(left))
+			//fmt.Printf("toFloat(right)=%#v\n", toFloat64(right))
+			return toFloat64(left) > toFloat64(right), nil
+		case ">=":
+			return toFloat64(left) >= toFloat64(right), nil
+		case "<":
+			return toFloat64(left) < toFloat64(right), nil
+		case "<=":
+			return toFloat64(left) <= toFloat64(right), nil
+		case "+":
 			l_kind := reflect.TypeOf(left).Kind()
 			r_kind := reflect.TypeOf(right).Kind()
 			switch {
@@ -57,7 +77,7 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 			default:
 				return toFloat64(left) + toFloat64(right), nil
 			}
-		case '-':
+		case "-":
 			l_kind := reflect.TypeOf(left).Kind()
 			r_kind := reflect.TypeOf(right).Kind()
 			switch {

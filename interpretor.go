@@ -18,6 +18,7 @@ func main() {
 		panic(err)
 	}
 	defer tty.Close()
+	//fmt.Fprintf(tty, "tty opened\n")
 
 	run()
 }
@@ -41,12 +42,12 @@ func run() {
 		l := new(parser.Lexer)
 		l.Init(strings.NewReader(source))
 		parser.Parse(l)
-		fmt.Fprintf(tty, "%#v\n", l.Result)
+		//fmt.Printf("%#v\n", l.Result)
 		//TODO: Error Check
 		if res, err := vm.Run(l.Result, env); err != nil {
 			fmt.Printf("Eval error:%v\n", err)
 		} else {
-			fmt.Fprintf(tty, "ENV=%#v\n", env)
+			//fmt.Printf("ENV=%#v\n", env)
 			fmt.Printf("%#v\n", res)
 		}
 		source = ""

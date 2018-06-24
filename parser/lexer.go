@@ -21,6 +21,30 @@ func (l *Lexer) Lex(lval *yySymType) int {
 		token = NUMBER
 	case scanner.Ident:
 		token = IDENT
+	case int('='):
+		switch l.Peek() {
+		case '=':
+			token = EQEQ
+			l.Next()
+		}
+	case int('!'):
+		switch l.Peek() {
+		case '=':
+			token = NEQ
+			l.Next()
+		}
+	case int('>'):
+		switch l.Peek() {
+		case '=':
+			token = GE
+			l.Next()
+		}
+	case int('<'):
+		switch l.Peek() {
+		case '=':
+			token = LE
+			l.Next()
+		}
 	}
 	lval.token = ast.Token{Token: token, Literal: l.TokenText()}
 	//fmt.Printf("token=%#v\n", lval.token)

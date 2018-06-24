@@ -16,6 +16,14 @@ func TestInterpretor(t *testing.T) {
 		stdout string
 	}{
 		{stdin: "1+1", stdout: "2"},
+		{stdin: "3-1-1", stdout: "1"},
+		{stdin: "a=1;b=2;a+b", stdout: "3"},
+		{stdin: "a=1;b=2;a+1==b", stdout: "true"},
+		{stdin: "a=1;b=2;a+1!=b", stdout: "false"},
+		{stdin: "a=1;b=2;a<b", stdout: "true"},
+		{stdin: "a=1;b=1;a<=b", stdout: "true"},
+		{stdin: "a=1;b=2;a>b", stdout: "false"},
+		{stdin: "a=1;b=1;a>=b", stdout: "true"},
 	}
 	realStdin := os.Stdin
 	realStdout := os.Stdout
