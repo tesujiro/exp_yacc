@@ -24,6 +24,15 @@ func (e *Env) NewEnv() *Env {
 	}
 }
 
+func (e *Env) Destroy() {
+	if e.parent == nil {
+		return
+	}
+	e.parent = nil
+	e.env = nil
+	return
+}
+
 func (e *Env) Set(k string, v interface{}) error {
 	//fmt.Printf("Set(%#v,%#v)\n", k, v)
 	if _, ok := e.env[k]; ok {

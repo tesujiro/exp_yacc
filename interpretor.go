@@ -30,7 +30,7 @@ func run() {
 		if source == "" {
 			continue
 		}
-		if source == "exit" {
+		if source == "exit" || source == "quit" {
 			break
 		}
 
