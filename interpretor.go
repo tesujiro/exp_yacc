@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"os"
 	"strings"
@@ -10,16 +11,10 @@ import (
 	"github.com/tesujiro/exp_yacc/vm"
 )
 
-var tty *os.File
+var debug = flag.Bool("d", false, "debug option")
 
 func main() {
-	tty, err := os.Open(`/dev/tty`)
-	if err != nil {
-		panic(err)
-	}
-	defer tty.Close()
-	//fmt.Fprintf(tty, "tty opened\n")
-
+	flag.Parse()
 	run()
 }
 
@@ -42,12 +37,16 @@ func run() {
 		l := new(parser.Lexer)
 		l.Init(strings.NewReader(source))
 		parser.Parse(l)
-		//fmt.Printf("%#v\n", l.Result)
+		if *debug {
+			fmt.Printf("%#v\n", l.Result)
+		}
 		//TODO: Error Check
 		if res, err := vm.Run(l.Result, env); err != nil {
 			fmt.Printf("Eval error:%v\n", err)
 		} else {
-			//fmt.Printf("ENV=%#v\n", env)
+			if *debug {
+				fmt.Printf("ENV=%#v\n", env)
+			}
 			fmt.Printf("%#v\n", res)
 		}
 		source = ""
