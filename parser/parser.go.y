@@ -64,6 +64,10 @@ expr
     {
         $$ = ast.NumExpr{Literal: $1.Literal}
     }
+    | '(' expr ')'
+    {
+        $$ = ast.ParentExpr{SubExpr: $2}
+    }
     | expr '+' expr
     {
         $$ = ast.BinOpExpr{Left: $1, Operator: "+", Right: $3}

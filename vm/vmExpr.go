@@ -32,6 +32,23 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 		} else {
 			return val, nil
 		}
+	case ast.NumExpr:
+		lit := expr.(ast.NumExpr).Literal
+		if strings.Contains(lit, ".") {
+			if f, err := strconv.ParseFloat(lit, 64); err != nil {
+				return 0.0, err
+			} else {
+				return f, nil
+			}
+		}
+		if i, err := strconv.ParseInt(lit, 10, 64); err != nil {
+			return 0, err
+		} else {
+			return i, nil
+		}
+	case ast.ParentExpr:
+		sub := expr.(ast.ParentExpr).SubExpr
+		return evalExpr(sub, env)
 	case ast.BinOpExpr:
 		var left, right interface{}
 		var err error
@@ -90,20 +107,6 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 			default:
 				return toFloat64(left) - toFloat64(right), nil
 			}
-		}
-	case ast.NumExpr:
-		lit := expr.(ast.NumExpr).Literal
-		if strings.Contains(lit, ".") {
-			if f, err := strconv.ParseFloat(lit, 64); err != nil {
-				return 0.0, err
-			} else {
-				return f, nil
-			}
-		}
-		if i, err := strconv.ParseInt(lit, 10, 64); err != nil {
-			return 0, err
-		} else {
-			return i, nil
 		}
 	}
 	return 0, nil
