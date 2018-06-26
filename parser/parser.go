@@ -35,18 +35,16 @@ const (
 
 var (
 	yyPrec = map[int]int{
-		';':   0,
-		'\n':  0,
-		'=':   1,
-		IDENT: 2,
-		EQEQ:  3,
-		NEQ:   3,
-		'>':   4,
-		'<':   4,
-		GE:    4,
-		LE:    4,
-		'+':   5,
-		'-':   5,
+		'=':   0,
+		IDENT: 1,
+		EQEQ:  2,
+		NEQ:   2,
+		'>':   3,
+		'<':   3,
+		GE:    3,
+		LE:    3,
+		'+':   4,
+		'-':   4,
 	}
 
 	yyXLAT = map[int]int{

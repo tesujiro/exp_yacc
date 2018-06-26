@@ -18,7 +18,6 @@ import "github.com/tesujiro/exp_yacc/ast"
 %type<expr>   expr
 %token<token> IDENT NUMBER EQEQ NEQ GE LE
 
-%left ';' '\n'
 %right '='
 %left IDENT
 %left EQEQ NEQ
