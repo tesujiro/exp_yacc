@@ -17,6 +17,7 @@ func TestInterpretor(t *testing.T) {
 	}{
 		{stdin: "1+1", stdout: "2"},
 		{stdin: "3-1-1", stdout: "1"},
+		{stdin: "3-(1-1)", stdout: "3"},
 		{stdin: "a=1;b=2;a+b", stdout: "3"},
 		{stdin: "a=1;b=2;a+1==b", stdout: "true"},
 		{stdin: "a=1;b=2;a+1!=b", stdout: "false"},
