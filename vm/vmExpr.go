@@ -90,10 +90,6 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 			switch {
 			case l_kind == reflect.Int64 && r_kind == reflect.Int64:
 				return toInt64(left) + toInt64(right), nil
-			//case l_kind == reflect.Int64 && r_kind == reflect.Float64:
-			//return float64(toInt64(left)) + toFloat64(right), nil
-			//case l_kind == reflect.Float64 && r_kind == reflect.Int64:
-			//return toFloat64(left) + float64(toInt64(right)), nil
 			default:
 				return toFloat64(left) + toFloat64(right), nil
 			}
