@@ -1,6 +1,7 @@
 package vm
 
 import (
+	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -61,14 +62,16 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 		if right, err = evalExpr(expr.(ast.BinOpExpr).Right, env); err != nil {
 			return nil, err
 		}
-		//TODO: checking type  "a==1"
-		if left == nil && right == nil {
-			return 0, nil
-		} else if left == nil {
-			return right, nil
-		} else if right == nil {
-			return left, nil
-		}
+		/*
+			//TODO: checking type  "a==1"
+			if left == nil && right == nil {
+				return 0, nil
+			} else if left == nil {
+				return right, nil
+			} else if right == nil {
+				return left, nil
+			}
+		*/
 		switch expr.(ast.BinOpExpr).Operator {
 		case "==":
 			return left == right, nil
@@ -114,6 +117,9 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 		case "/":
 			l_kind := reflect.TypeOf(left).Kind()
 			r_kind := reflect.TypeOf(right).Kind()
+			if right == int64(0) {
+				return nil, fmt.Errorf("devision by zero")
+			}
 			switch {
 			case l_kind == reflect.Int64 && r_kind == reflect.Int64:
 				return toInt64(left) / toInt64(right), nil

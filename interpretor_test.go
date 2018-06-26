@@ -29,6 +29,7 @@ func TestInterpretor(t *testing.T) {
 		{stdin: "15/5", stdout: "3"},
 		{stdin: "16/5", stdout: "3"},
 		{stdin: "3/1.5", stdout: "2"},
+		{stdin: "3/0", stdout: "Eval error:devision by zero"},
 		{stdin: "15%5", stdout: "0"},
 		{stdin: "16%5", stdout: "1"},
 		{stdin: "15%4.1", stdout: "3"},
