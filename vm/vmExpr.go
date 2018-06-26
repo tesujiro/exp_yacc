@@ -9,6 +9,10 @@ import (
 )
 
 func toInt64(val interface{}) int64 {
+	switch reflect.TypeOf(val).Kind() {
+	case reflect.Float64, reflect.Float32:
+		return int64(val.(float64))
+	}
 	i, _ := val.(int64)
 	return i
 }
@@ -17,7 +21,6 @@ func toFloat64(val interface{}) float64 {
 	switch reflect.TypeOf(val).Kind() {
 	case reflect.Int64, reflect.Int32, reflect.Int16, reflect.Int8, reflect.Int:
 		return float64(val.(int64))
-		//return float64(reflect.ValueOf(val).Int())
 	}
 	f, _ := val.(float64)
 	return f
@@ -87,10 +90,10 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 			switch {
 			case l_kind == reflect.Int64 && r_kind == reflect.Int64:
 				return toInt64(left) + toInt64(right), nil
-			case l_kind == reflect.Int64 && r_kind == reflect.Float64:
-				return float64(toInt64(left)) + toFloat64(right), nil
-			case l_kind == reflect.Float64 && r_kind == reflect.Int64:
-				return toFloat64(left) + float64(toInt64(right)), nil
+			//case l_kind == reflect.Int64 && r_kind == reflect.Float64:
+			//return float64(toInt64(left)) + toFloat64(right), nil
+			//case l_kind == reflect.Float64 && r_kind == reflect.Int64:
+			//return toFloat64(left) + float64(toInt64(right)), nil
 			default:
 				return toFloat64(left) + toFloat64(right), nil
 			}
@@ -100,13 +103,29 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 			switch {
 			case l_kind == reflect.Int64 && r_kind == reflect.Int64:
 				return toInt64(left) - toInt64(right), nil
-			case l_kind == reflect.Int64 && r_kind == reflect.Float64:
-				return float64(toInt64(left)) - toFloat64(right), nil
-			case l_kind == reflect.Float64 && r_kind == reflect.Int64:
-				return toFloat64(left) - float64(toInt64(right)), nil
 			default:
 				return toFloat64(left) - toFloat64(right), nil
 			}
+		case "*":
+			l_kind := reflect.TypeOf(left).Kind()
+			r_kind := reflect.TypeOf(right).Kind()
+			switch {
+			case l_kind == reflect.Int64 && r_kind == reflect.Int64:
+				return toInt64(left) * toInt64(right), nil
+			default:
+				return toFloat64(left) * toFloat64(right), nil
+			}
+		case "/":
+			l_kind := reflect.TypeOf(left).Kind()
+			r_kind := reflect.TypeOf(right).Kind()
+			switch {
+			case l_kind == reflect.Int64 && r_kind == reflect.Int64:
+				return toInt64(left) / toInt64(right), nil
+			default:
+				return toFloat64(left) / toFloat64(right), nil
+			}
+		case "%":
+			return toInt64(left) % toInt64(right), nil
 		}
 	}
 	return 0, nil

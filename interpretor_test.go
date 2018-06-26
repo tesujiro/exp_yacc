@@ -16,8 +16,23 @@ func TestInterpretor(t *testing.T) {
 		stdout string
 	}{
 		{stdin: "1+1", stdout: "2"},
+		{stdin: "1+1.1", stdout: "2.1"},
+		{stdin: "1.1+4", stdout: "5.1"},
+		{stdin: "1.1+1.1", stdout: "2.2"},
+		{stdin: "3-1.1", stdout: "1.9"},
+		{stdin: "2.2-1.1", stdout: "1.1"},
 		{stdin: "3-1-1", stdout: "1"},
 		{stdin: "3-(1-1)", stdout: "3"},
+		{stdin: "3*5", stdout: "15"},
+		{stdin: "1.5*2", stdout: "3"},
+		{stdin: "5*1.2", stdout: "6"},
+		{stdin: "15/5", stdout: "3"},
+		{stdin: "16/5", stdout: "3"},
+		{stdin: "3/1.5", stdout: "2"},
+		{stdin: "15%5", stdout: "0"},
+		{stdin: "16%5", stdout: "1"},
+		{stdin: "15%4.1", stdout: "3"},
+		{stdin: "15.2%7.1", stdout: "1"},
 		{stdin: "a=1;b=2;a+b", stdout: "3"},
 		{stdin: "a=1;b=2;a+1==b", stdout: "true"},
 		{stdin: "a=1;b=2;a+1!=b", stdout: "false"},
@@ -25,6 +40,9 @@ func TestInterpretor(t *testing.T) {
 		{stdin: "a=1;b=1;a<=b", stdout: "true"},
 		{stdin: "a=1;b=2;a>b", stdout: "false"},
 		{stdin: "a=1;b=1;a>=b", stdout: "true"},
+		{stdin: "a=1;b=0.1;a>b", stdout: "true"},
+		{stdin: "a=1;b=0.1;c=15;(a+b)*c", stdout: "16.5"},
+		{stdin: "a=1;b=0.1;c=15;(a+b)*c/0.5", stdout: "33"},
 	}
 	realStdin := os.Stdin
 	realStdout := os.Stdout

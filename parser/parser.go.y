@@ -24,6 +24,7 @@ import "github.com/tesujiro/exp_yacc/ast"
 %left '>' '<' GE LE
 
 %left '+' '-'
+%left '*' '/' '%'
 
 %%
 
@@ -74,6 +75,18 @@ expr
     | expr '-' expr
     {
         $$ = ast.BinOpExpr{Left: $1, Operator: "-", Right: $3}
+    }
+    | expr '*' expr
+    {
+        $$ = ast.BinOpExpr{Left: $1, Operator: "*", Right: $3}
+    }
+    | expr '/' expr
+    {
+        $$ = ast.BinOpExpr{Left: $1, Operator: "/", Right: $3}
+    }
+    | expr '%' expr
+    {
+        $$ = ast.BinOpExpr{Left: $1, Operator: "%", Right: $3}
     }
     | expr EQEQ expr
     {
