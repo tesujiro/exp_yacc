@@ -13,4 +13,4 @@ script:
   - go test -v -coverprofile=coverage.txt -covermode=count . ./vm  
 
 after_success:
-  #- bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash)
