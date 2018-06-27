@@ -25,6 +25,7 @@ import "github.com/tesujiro/exp_yacc/ast"
 
 %left '+' '-'
 %left '*' '/' '%'
+%right UNARY
 
 %%
 
@@ -63,6 +64,14 @@ expr
     | NUMBER
     {
         $$ = ast.NumExpr{Literal: $1.Literal}
+    }
+    | '+' expr %prec UNARY
+    {
+        $$ = ast.UnaryExpr{Operator: "+", Expr:$2}
+    }
+    | '-' expr %prec UNARY
+    {
+        $$ = ast.UnaryExpr{Operator: "-", Expr:$2}
     }
     | '(' expr ')'
     {

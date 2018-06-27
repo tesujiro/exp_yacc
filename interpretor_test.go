@@ -15,6 +15,8 @@ func TestInterpretor(t *testing.T) {
 		stderr string
 		stdout string
 	}{
+		{stdin: "+1+4", stdout: "5"},
+		{stdin: "-1+3", stdout: "2"},
 		{stdin: "1+1", stdout: "2"},
 		{stdin: "1+1.1", stdout: "2.1"},
 		{stdin: "1.1+4", stdout: "5.1"},

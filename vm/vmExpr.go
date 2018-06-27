@@ -53,6 +53,24 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 	case ast.ParentExpr:
 		sub := expr.(ast.ParentExpr).SubExpr
 		return evalExpr(sub, env)
+	case ast.UnaryExpr:
+		var val interface{}
+		var err error
+		if val, err = evalExpr(expr.(ast.UnaryExpr).Expr, env); err != nil {
+			return nil, err
+		}
+		switch expr.(ast.UnaryExpr).Operator {
+		case "+":
+			return val, nil
+		case "-":
+			kind := reflect.TypeOf(val).Kind()
+			switch kind {
+			case reflect.Int64, reflect.Int32, reflect.Int16, reflect.Int8, reflect.Int:
+				return -1 * toInt64(val), nil
+			case reflect.Float64, reflect.Float32:
+				return -1 * toFloat64(val), nil
+			}
+		}
 	case ast.BinOpExpr:
 		var left, right interface{}
 		var err error
