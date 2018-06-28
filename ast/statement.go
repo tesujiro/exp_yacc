@@ -12,8 +12,8 @@ type ExprStmt struct {
 }
 
 type IfStmt struct {
-	If Expr
-	Then []Stmt
-	Else []Stmt
+	If     Expr
+	Then   []Stmt
+	Else   []Stmt
 	ElseIf []Stmt
 }

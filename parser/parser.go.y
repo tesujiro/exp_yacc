@@ -63,22 +63,21 @@ stmt
     }
 
 stmt_if
-    //: stmt_if ELSE IF expr '{' stmts '}'
-    //{
-            //$$.(*ast.IfStmt).ElseIf = append($$.(*ast.IfStmt).ElseIf, ast.IfStmt{If: $4, Then: $6} )
-    //}
-    //| stmt_if ELSE '{' stmts '}'
-    //{
-        //if $$.(*ast.IfStmt).Else != nil {
-            //yylex.Error("multiple else statement")
-        //} else {
-            //$$.(*ast.IfStmt).Else = append($$.(*ast.IfStmt).Else, $4...)
-        //}
-    //}
-    //| IF expr '{' stmts '}'
-    : IF expr '{' stmts '}'
+    : stmt_if ELSE IF expr '{' stmts '}'
     {
-        $$ = ast.IfStmt{If: $2, Then: $4, Else: nil}
+            $$.(*ast.IfStmt).ElseIf = append($$.(*ast.IfStmt).ElseIf, ast.IfStmt{If: $4, Then: $6} )
+    }
+    | stmt_if ELSE '{' stmts '}'
+    {
+        if $$.(*ast.IfStmt).Else != nil {
+            yylex.Error("multiple else statement")
+        } else {
+            $$.(*ast.IfStmt).Else = append($$.(*ast.IfStmt).Else, $4...)
+        }
+    }
+    | IF expr '{' stmts '}'
+    {
+        $$ = &ast.IfStmt{If: $2, Then: $4, Else: nil}
     }
 
 expr

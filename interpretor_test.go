@@ -46,6 +46,11 @@ func TestInterpretor(t *testing.T) {
 		{stdin: "a=1;b=0.1;a>b", stdout: "true"},
 		{stdin: "a=1;b=0.1;c=15;(a+b)*c", stdout: "16.5"},
 		{stdin: "a=1;b=0.1;c=15;(a+b)*c/0.5", stdout: "33"},
+		{stdin: "a=1;if a==1 { a=2 }", stdout: "2"},
+		{stdin: "a=1;if a==1 { a=2 };a", stdout: "2"},
+		{stdin: "a=1;if a==1 { b=2 };b", stdout: "Eval error:unknown symbol 'b'"},
+		{stdin: "a=2;if a==1 { a=2 } else { a=3;b=4 }", stdout: "4"},
+		{stdin: "a=1;b=1;if a==1 { b=2 };b", stdout: "2"},
 	}
 	realStdin := os.Stdin
 	realStdout := os.Stdout
