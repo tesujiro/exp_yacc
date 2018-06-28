@@ -10,3 +10,10 @@ type AssStmt struct {
 type ExprStmt struct {
 	Expr Expr
 }
+
+type IfStmt struct {
+	If Expr
+	Then []Stmt
+	Else []Stmt
+	ElseIf []Stmt
+}

@@ -7,11 +7,12 @@ import __yyfmt__ "fmt"
 import "github.com/tesujiro/exp_yacc/ast"
 
 type yySymType struct {
-	yys   int
-	token ast.Token
-	expr  ast.Expr
-	stmt  ast.Stmt
-	stmts []ast.Stmt
+	yys     int
+	token   ast.Token
+	expr    ast.Expr
+	stmt_if ast.Stmt
+	stmt    ast.Stmt
+	stmts   []ast.Stmt
 }
 
 type yyXError struct {
@@ -19,19 +20,21 @@ type yyXError struct {
 }
 
 const (
-	yyDefault = 57353
+	yyDefault = 57355
 	yyEofCode = 57344
+	ELSE      = 57353
 	EQEQ      = 57348
 	GE        = 57350
 	IDENT     = 57346
+	IF        = 57352
 	LE        = 57351
 	NEQ       = 57349
 	NUMBER    = 57347
-	UNARY     = 57352
+	UNARY     = 57354
 	yyErrCode = 57345
 
 	yyMaxDepth = 200
-	yyTabOfs   = -30
+	yyTabOfs   = -32
 )
 
 var (
@@ -53,36 +56,41 @@ var (
 	}
 
 	yyXLAT = map[int]int{
-		43:    0,  // '+' (44x)
-		45:    1,  // '-' (44x)
-		57344: 2,  // $end (30x)
-		10:    3,  // '\n' (28x)
-		40:    4,  // '(' (25x)
-		57346: 5,  // IDENT (25x)
-		57347: 6,  // NUMBER (25x)
-		59:    7,  // ';' (22x)
-		37:    8,  // '%' (19x)
-		42:    9,  // '*' (19x)
-		47:    10, // '/' (19x)
-		60:    11, // '<' (19x)
-		62:    12, // '>' (19x)
-		57348: 13, // EQEQ (19x)
-		57350: 14, // GE (19x)
-		57351: 15, // LE (19x)
-		57349: 16, // NEQ (19x)
-		41:    17, // ')' (17x)
-		61:    18, // '=' (17x)
-		57354: 19, // expr (17x)
-		57355: 20, // newLine (5x)
-		57356: 21, // newLines (3x)
-		57357: 22, // opt_term (2x)
-		57359: 23, // stmt (2x)
-		57361: 24, // term (2x)
-		57358: 25, // program (1x)
-		57360: 26, // stmts (1x)
-		57353: 27, // $default (0x)
-		57345: 28, // error (0x)
-		57352: 29, // UNARY (0x)
+		43:    0,  // '+' (48x)
+		45:    1,  // '-' (48x)
+		57344: 2,  // $end (32x)
+		10:    3,  // '\n' (32x)
+		40:    4,  // '(' (28x)
+		57346: 5,  // IDENT (28x)
+		57347: 6,  // NUMBER (28x)
+		59:    7,  // ';' (26x)
+		125:   8,  // '}' (23x)
+		37:    9,  // '%' (20x)
+		42:    10, // '*' (20x)
+		47:    11, // '/' (20x)
+		60:    12, // '<' (20x)
+		62:    13, // '>' (20x)
+		57348: 14, // EQEQ (20x)
+		57350: 15, // GE (20x)
+		57351: 16, // LE (20x)
+		57349: 17, // NEQ (20x)
+		57356: 18, // expr (19x)
+		41:    19, // ')' (17x)
+		61:    20, // '=' (17x)
+		123:   21, // '{' (17x)
+		57352: 22, // IF (12x)
+		57357: 23, // newLine (7x)
+		57358: 24, // newLines (5x)
+		57364: 25, // term (4x)
+		57359: 26, // opt_term (3x)
+		57361: 27, // stmt (3x)
+		57362: 28, // stmt_if (3x)
+		57363: 29, // stmts (2x)
+		57360: 30, // program (1x)
+		57355: 31, // $default (0x)
+		57353: 32, // ELSE (0x)
+		57345: 33, // error (0x)
+		57354: 34, // UNARY (0x)
 	}
 
 	yySymNames = []string{
@@ -94,6 +102,7 @@ var (
 		"IDENT",
 		"NUMBER",
 		"';'",
+		"'}'",
 		"'%'",
 		"'*'",
 		"'/'",
@@ -103,17 +112,21 @@ var (
 		"GE",
 		"LE",
 		"NEQ",
+		"expr",
 		"')'",
 		"'='",
-		"expr",
+		"'{'",
+		"IF",
 		"newLine",
 		"newLines",
+		"term",
 		"opt_term",
 		"stmt",
-		"term",
-		"program",
+		"stmt_if",
 		"stmts",
+		"program",
 		"$default",
+		"ELSE",
 		"error",
 		"UNARY",
 	}
@@ -122,99 +135,110 @@ var (
 
 	yyReductions = map[int]struct{ xsym, components int }{
 		0:  {0, 1},
-		1:  {25, 2},
-		2:  {26, 2},
-		3:  {26, 3},
-		4:  {23, 3},
-		5:  {23, 1},
-		6:  {19, 1},
-		7:  {19, 1},
-		8:  {19, 2},
-		9:  {19, 2},
-		10: {19, 3},
-		11: {19, 3},
-		12: {19, 3},
-		13: {19, 3},
-		14: {19, 3},
-		15: {19, 3},
-		16: {19, 3},
-		17: {19, 3},
-		18: {19, 3},
-		19: {19, 3},
-		20: {19, 3},
-		21: {19, 3},
-		22: {22, 0},
-		23: {22, 1},
-		24: {24, 2},
-		25: {24, 1},
-		26: {24, 1},
-		27: {21, 1},
-		28: {21, 2},
-		29: {20, 1},
+		1:  {30, 2},
+		2:  {29, 2},
+		3:  {29, 3},
+		4:  {27, 1},
+		5:  {27, 3},
+		6:  {27, 1},
+		7:  {28, 5},
+		8:  {18, 1},
+		9:  {18, 1},
+		10: {18, 2},
+		11: {18, 2},
+		12: {18, 3},
+		13: {18, 3},
+		14: {18, 3},
+		15: {18, 3},
+		16: {18, 3},
+		17: {18, 3},
+		18: {18, 3},
+		19: {18, 3},
+		20: {18, 3},
+		21: {18, 3},
+		22: {18, 3},
+		23: {18, 3},
+		24: {26, 0},
+		25: {26, 1},
+		26: {25, 2},
+		27: {25, 1},
+		28: {25, 1},
+		29: {24, 1},
+		30: {24, 2},
+		31: {23, 1},
 	}
 
 	yyXErrors = map[yyXError]string{}
 
-	yyParseTab = [49][]uint8{
+	yyParseTab = [56][]uint8{
 		// 0
-		{8, 8, 3: 38, 8, 8, 8, 35, 20: 37, 36, 33, 24: 34, 31, 32},
-		{2: 30},
-		{2: 8, 38, 7: 35, 20: 37, 36, 76, 24: 77},
-		{45, 46, 4: 47, 43, 44, 19: 42, 23: 41},
-		{7, 7, 4: 7, 7, 7},
+		{8, 8, 3: 40, 8, 8, 8, 37, 22: 8, 39, 38, 36, 35, 29: 34, 33},
+		{2: 32},
+		{2: 8, 40, 7: 37, 23: 39, 38, 87, 86},
+		{49, 50, 4: 51, 47, 48, 18: 45, 22: 46, 27: 43, 44},
+		{7, 7, 4: 7, 7, 7, 22: 7},
 		// 5
-		{4, 4, 4, 38, 4, 4, 4, 20: 37, 40},
-		{5, 5, 5, 38, 5, 5, 5, 20: 39},
-		{3, 3, 3, 3, 3, 3, 3},
-		{1, 1, 1, 1, 1, 1, 1},
-		{2, 2, 2, 2, 2, 2, 2},
+		{4, 4, 4, 40, 4, 4, 4, 22: 4, 39, 42},
+		{5, 5, 5, 40, 5, 5, 5, 22: 5, 41},
+		{3, 3, 3, 3, 3, 3, 3, 22: 3},
+		{1, 1, 1, 1, 1, 1, 1, 22: 1},
+		{2, 2, 2, 2, 2, 2, 2, 22: 2},
 		// 10
-		{6, 6, 6, 38, 6, 6, 6, 20: 39},
-		{2: 28, 28, 7: 28},
-		{50, 51, 25, 25, 7: 25, 54, 52, 53, 58, 57, 55, 59, 60, 56, 18: 74},
-		{24, 24, 24, 24, 7: 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24},
-		{23, 23, 23, 23, 7: 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23},
+		{6, 6, 6, 40, 6, 6, 6, 22: 6, 41},
+		{2: 30, 30, 7: 30, 30},
+		{2: 28, 28, 7: 28, 28},
+		{54, 55, 26, 26, 7: 26, 26, 58, 56, 57, 62, 61, 59, 63, 64, 60, 20: 84},
+		{49, 50, 4: 51, 47, 48, 18: 78},
 		// 15
-		{45, 46, 4: 47, 43, 44, 19: 73},
-		{45, 46, 4: 47, 43, 44, 19: 72},
-		{45, 46, 4: 47, 43, 44, 19: 48},
-		{50, 51, 8: 54, 52, 53, 58, 57, 55, 59, 60, 56, 49},
-		{20, 20, 20, 20, 7: 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20},
+		{24, 24, 24, 24, 7: 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 19: 24, 24, 24},
+		{23, 23, 23, 23, 7: 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 19: 23, 23, 23},
+		{49, 50, 4: 51, 47, 48, 18: 77},
+		{49, 50, 4: 51, 47, 48, 18: 76},
+		{49, 50, 4: 51, 47, 48, 18: 52},
 		// 20
-		{45, 46, 4: 47, 43, 44, 19: 71},
-		{45, 46, 4: 47, 43, 44, 19: 70},
-		{45, 46, 4: 47, 43, 44, 19: 69},
-		{45, 46, 4: 47, 43, 44, 19: 68},
-		{45, 46, 4: 47, 43, 44, 19: 67},
+		{54, 55, 9: 58, 56, 57, 62, 61, 59, 63, 64, 60, 19: 53},
+		{20, 20, 20, 20, 7: 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 19: 20, 20, 20},
+		{49, 50, 4: 51, 47, 48, 18: 75},
+		{49, 50, 4: 51, 47, 48, 18: 74},
+		{49, 50, 4: 51, 47, 48, 18: 73},
 		// 25
-		{45, 46, 4: 47, 43, 44, 19: 66},
-		{45, 46, 4: 47, 43, 44, 19: 65},
-		{45, 46, 4: 47, 43, 44, 19: 64},
-		{45, 46, 4: 47, 43, 44, 19: 63},
-		{45, 46, 4: 47, 43, 44, 19: 62},
+		{49, 50, 4: 51, 47, 48, 18: 72},
+		{49, 50, 4: 51, 47, 48, 18: 71},
+		{49, 50, 4: 51, 47, 48, 18: 70},
+		{49, 50, 4: 51, 47, 48, 18: 69},
+		{49, 50, 4: 51, 47, 48, 18: 68},
 		// 30
-		{45, 46, 4: 47, 43, 44, 19: 61},
-		{50, 51, 9, 9, 7: 9, 54, 52, 53, 9, 9, 9, 9, 9, 9, 9, 9},
-		{50, 51, 10, 10, 7: 10, 54, 52, 53, 10, 10, 10, 10, 10, 10, 10, 10},
-		{50, 51, 11, 11, 7: 11, 54, 52, 53, 11, 11, 11, 11, 11, 11, 11, 11},
-		{50, 51, 12, 12, 7: 12, 54, 52, 53, 12, 12, 12, 12, 12, 12, 12, 12},
+		{49, 50, 4: 51, 47, 48, 18: 67},
+		{49, 50, 4: 51, 47, 48, 18: 66},
+		{49, 50, 4: 51, 47, 48, 18: 65},
+		{54, 55, 9, 9, 7: 9, 9, 58, 56, 57, 9, 9, 9, 9, 9, 9, 19: 9, 9, 9},
+		{54, 55, 10, 10, 7: 10, 10, 58, 56, 57, 10, 10, 10, 10, 10, 10, 19: 10, 10, 10},
 		// 35
-		{50, 51, 13, 13, 7: 13, 54, 52, 53, 58, 57, 13, 59, 60, 13, 13, 13},
-		{50, 51, 14, 14, 7: 14, 54, 52, 53, 58, 57, 14, 59, 60, 14, 14, 14},
-		{15, 15, 15, 15, 7: 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15},
-		{16, 16, 16, 16, 7: 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16},
-		{17, 17, 17, 17, 7: 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17},
+		{54, 55, 11, 11, 7: 11, 11, 58, 56, 57, 11, 11, 11, 11, 11, 11, 19: 11, 11, 11},
+		{54, 55, 12, 12, 7: 12, 12, 58, 56, 57, 12, 12, 12, 12, 12, 12, 19: 12, 12, 12},
+		{54, 55, 13, 13, 7: 13, 13, 58, 56, 57, 62, 61, 13, 63, 64, 13, 19: 13, 13, 13},
+		{54, 55, 14, 14, 7: 14, 14, 58, 56, 57, 62, 61, 14, 63, 64, 14, 19: 14, 14, 14},
+		{15, 15, 15, 15, 7: 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 19: 15, 15, 15},
 		// 40
-		{18, 18, 18, 18, 7: 18, 54, 52, 53, 18, 18, 18, 18, 18, 18, 18, 18},
-		{19, 19, 19, 19, 7: 19, 54, 52, 53, 19, 19, 19, 19, 19, 19, 19, 19},
-		{21, 21, 21, 21, 7: 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21},
-		{22, 22, 22, 22, 7: 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22},
-		{45, 46, 4: 47, 43, 44, 19: 75},
+		{16, 16, 16, 16, 7: 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 19: 16, 16, 16},
+		{17, 17, 17, 17, 7: 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 19: 17, 17, 17},
+		{18, 18, 18, 18, 7: 18, 18, 58, 56, 57, 18, 18, 18, 18, 18, 18, 19: 18, 18, 18},
+		{19, 19, 19, 19, 7: 19, 19, 58, 56, 57, 19, 19, 19, 19, 19, 19, 19: 19, 19, 19},
+		{21, 21, 21, 21, 7: 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 19: 21, 21, 21},
 		// 45
-		{50, 51, 26, 26, 7: 26, 54, 52, 53, 58, 57, 55, 59, 60, 56},
-		{2: 29},
-		{45, 46, 7, 4: 47, 43, 44, 19: 42, 23: 78},
-		{2: 27, 27, 7: 27},
+		{22, 22, 22, 22, 7: 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 19: 22, 22, 22},
+		{54, 55, 9: 58, 56, 57, 62, 61, 59, 63, 64, 60, 21: 79},
+		{8, 8, 3: 40, 8, 8, 8, 37, 22: 8, 39, 38, 36, 35, 29: 80},
+		{3: 40, 7: 37, 82, 23: 39, 38, 81},
+		{49, 50, 4: 51, 47, 48, 18: 45, 22: 46, 27: 83, 44},
+		// 50
+		{2: 25, 25, 7: 25, 25},
+		{2: 29, 29, 7: 29, 29},
+		{49, 50, 4: 51, 47, 48, 18: 85},
+		{54, 55, 27, 27, 7: 27, 27, 58, 56, 57, 62, 61, 59, 63, 64, 60},
+		{2: 31},
+		// 55
+		{49, 50, 7, 4: 51, 47, 48, 18: 45, 22: 46, 27: 83, 44},
 	}
 )
 
@@ -255,7 +279,7 @@ func yylex1(yylex yyLexer, lval *yySymType) (n int) {
 }
 
 func yyParse(yylex yyLexer) int {
-	const yyError = 28
+	const yyError = 33
 
 	yyEx, _ := yylex.(yyLexerEx)
 	var yyn int
@@ -458,73 +482,81 @@ yynewstate:
 		}
 	case 4:
 		{
-			yyVAL.stmt = ast.AssStmt{Left: yyS[yypt-2].expr, Right: yyS[yypt-0].expr}
+			yyVAL.stmt = yyS[yypt-0].stmt_if
 		}
 	case 5:
 		{
-			yyVAL.stmt = ast.ExprStmt{Expr: yyS[yypt-0].expr}
+			yyVAL.stmt = ast.AssStmt{Left: yyS[yypt-2].expr, Right: yyS[yypt-0].expr}
 		}
 	case 6:
 		{
-			yyVAL.expr = ast.IdentExpr{Literal: yyS[yypt-0].token.Literal}
+			yyVAL.stmt = ast.ExprStmt{Expr: yyS[yypt-0].expr}
 		}
 	case 7:
 		{
-			yyVAL.expr = ast.NumExpr{Literal: yyS[yypt-0].token.Literal}
+			yyVAL.stmt_if = ast.IfStmt{If: yyS[yypt-3].expr, Then: yyS[yypt-1].stmts, Else: nil}
 		}
 	case 8:
 		{
-			yyVAL.expr = ast.UnaryExpr{Operator: "+", Expr: yyS[yypt-0].expr}
+			yyVAL.expr = ast.IdentExpr{Literal: yyS[yypt-0].token.Literal}
 		}
 	case 9:
 		{
-			yyVAL.expr = ast.UnaryExpr{Operator: "-", Expr: yyS[yypt-0].expr}
+			yyVAL.expr = ast.NumExpr{Literal: yyS[yypt-0].token.Literal}
 		}
 	case 10:
 		{
-			yyVAL.expr = ast.ParentExpr{SubExpr: yyS[yypt-1].expr}
+			yyVAL.expr = ast.UnaryExpr{Operator: "+", Expr: yyS[yypt-0].expr}
 		}
 	case 11:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "+", Right: yyS[yypt-0].expr}
+			yyVAL.expr = ast.UnaryExpr{Operator: "-", Expr: yyS[yypt-0].expr}
 		}
 	case 12:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "-", Right: yyS[yypt-0].expr}
+			yyVAL.expr = ast.ParentExpr{SubExpr: yyS[yypt-1].expr}
 		}
 	case 13:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "*", Right: yyS[yypt-0].expr}
+			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "+", Right: yyS[yypt-0].expr}
 		}
 	case 14:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "/", Right: yyS[yypt-0].expr}
+			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "-", Right: yyS[yypt-0].expr}
 		}
 	case 15:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "%", Right: yyS[yypt-0].expr}
+			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "*", Right: yyS[yypt-0].expr}
 		}
 	case 16:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "==", Right: yyS[yypt-0].expr}
+			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "/", Right: yyS[yypt-0].expr}
 		}
 	case 17:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "!=", Right: yyS[yypt-0].expr}
+			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "%", Right: yyS[yypt-0].expr}
 		}
 	case 18:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: ">", Right: yyS[yypt-0].expr}
+			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "==", Right: yyS[yypt-0].expr}
 		}
 	case 19:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "<", Right: yyS[yypt-0].expr}
+			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "!=", Right: yyS[yypt-0].expr}
 		}
 	case 20:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: ">=", Right: yyS[yypt-0].expr}
+			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: ">", Right: yyS[yypt-0].expr}
 		}
 	case 21:
+		{
+			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "<", Right: yyS[yypt-0].expr}
+		}
+	case 22:
+		{
+			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: ">=", Right: yyS[yypt-0].expr}
+		}
+	case 23:
 		{
 			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "<=", Right: yyS[yypt-0].expr}
 		}

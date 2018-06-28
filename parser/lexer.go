@@ -12,6 +12,12 @@ type Lexer struct {
 	Result []ast.Stmt
 }
 
+// opName is a correction of operation names.
+var opName = map[string]int{
+	"if":   IF,
+	"else": ELSE,
+}
+
 func (l *Lexer) Lex(lval *yySymType) int {
 	token := int(l.Scan())
 	switch token {
@@ -20,7 +26,11 @@ func (l *Lexer) Lex(lval *yySymType) int {
 	case scanner.Float:
 		token = NUMBER
 	case scanner.Ident:
-		token = IDENT
+		if name, ok := opName[l.TokenText()]; ok {
+			token = name
+		} else {
+			token = IDENT
+		}
 	case int('='):
 		switch l.Peek() {
 		case '=':

@@ -8,6 +8,7 @@ import "github.com/tesujiro/exp_yacc/ast"
 %union{
     token ast.Token
     expr  ast.Expr
+    stmt_if  ast.Stmt
     stmt  ast.Stmt
     stmts []ast.Stmt
 }
@@ -15,8 +16,9 @@ import "github.com/tesujiro/exp_yacc/ast"
 %type<stmts>  program
 %type<stmts>  stmts
 %type<stmt>   stmt
+%type<stmt_if>   stmt_if
 %type<expr>   expr
-%token<token> IDENT NUMBER EQEQ NEQ GE LE
+%token<token> IDENT NUMBER EQEQ NEQ GE LE IF ELSE
 
 %right '='
 %left IDENT
@@ -47,13 +49,36 @@ stmts
     }
 
 stmt
-    : expr '=' expr
+    : stmt_if
+    {
+        $$ = $1
+    }
+    | expr '=' expr
     {
         $$ = ast.AssStmt{Left: $1, Right: $3}
     }
     | expr
     {
         $$ = ast.ExprStmt{Expr: $1}
+    }
+
+stmt_if
+    //: stmt_if ELSE IF expr '{' stmts '}'
+    //{
+            //$$.(*ast.IfStmt).ElseIf = append($$.(*ast.IfStmt).ElseIf, ast.IfStmt{If: $4, Then: $6} )
+    //}
+    //| stmt_if ELSE '{' stmts '}'
+    //{
+        //if $$.(*ast.IfStmt).Else != nil {
+            //yylex.Error("multiple else statement")
+        //} else {
+            //$$.(*ast.IfStmt).Else = append($$.(*ast.IfStmt).Else, $4...)
+        //}
+    //}
+    //| IF expr '{' stmts '}'
+    : IF expr '{' stmts '}'
+    {
+        $$ = ast.IfStmt{If: $2, Then: $4, Else: nil}
     }
 
 expr
