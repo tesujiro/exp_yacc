@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"text/scanner"
 
 	"github.com/tesujiro/exp_yacc/ast"
@@ -62,7 +63,7 @@ func (l *Lexer) Lex(lval *yySymType) int {
 }
 
 func (l *Lexer) Error(e string) {
-	panic(e)
+	fmt.Printf("Syntax error: %v at %v\n",e,l.Position)
 }
 
 func Parse(yylex yyLexer) int {
