@@ -23,13 +23,13 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 	case ast.ExprStmt:
 		return evalExpr(stmt.(ast.ExprStmt).Expr, env)
 	case *ast.IfStmt:
-		result, err := evalExpr(stmt.(*ast.IfStmt).If, env)
+		child := env.NewEnv()
+		defer child.Destroy()
+		result, err := evalExpr(stmt.(*ast.IfStmt).If, child)
 		if err != nil {
 			return nil, err
 		}
 		if result.(bool) {
-			child := env.NewEnv()
-			defer child.Destroy()
 			result, err = Run(stmt.(*ast.IfStmt).Then, child)
 			if err != nil {
 				return nil, err
@@ -39,16 +39,14 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 			return result, nil
 		}
 		done := false
-		if len(stmt.(*ast.IfStmt).ElseIf)>0 {
-			for _,stmt := range stmt.(*ast.IfStmt).ElseIf {
-				result, err := evalExpr(stmt.(*ast.IfStmt).If, env)
+		if len(stmt.(*ast.IfStmt).ElseIf) > 0 {
+			for _, stmt := range stmt.(*ast.IfStmt).ElseIf {
+				result, err := evalExpr(stmt.(*ast.IfStmt).If, child)
 				if err != nil {
 					return nil, err
 				}
-				if result.(bool){
+				if result.(bool) {
 					done = true
-					child := env.NewEnv()
-					defer child.Destroy()
 					result, err = Run(stmt.(*ast.IfStmt).Then, child)
 					if err != nil {
 						return nil, err
@@ -59,8 +57,6 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 		}
 
 		if !done && len(stmt.(*ast.IfStmt).Else) > 0 {
-			child := env.NewEnv()
-			defer child.Destroy()
 			result, err = Run(stmt.(*ast.IfStmt).Else, child)
 			if err != nil {
 				return nil, err

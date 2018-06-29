@@ -34,7 +34,6 @@ func (e *Env) Destroy() {
 }
 
 func (e *Env) Set(k string, v interface{}) error {
-	//fmt.Printf("Set(%#v,%#v)\n", k, v)
 	if _, ok := e.env[k]; ok {
 		e.env[k] = v
 		return nil
