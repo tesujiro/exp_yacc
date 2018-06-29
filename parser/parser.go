@@ -506,7 +506,7 @@ yynewstate:
 		}
 	case 7:
 		{
-			yyVAL.stmt_if.(*ast.IfStmt).ElseIf = append(yyVAL.stmt_if.(*ast.IfStmt).ElseIf, ast.IfStmt{If: yyS[yypt-3].expr, Then: yyS[yypt-1].stmts})
+			yyVAL.stmt_if.(*ast.IfStmt).ElseIf = append(yyVAL.stmt_if.(*ast.IfStmt).ElseIf, &ast.IfStmt{If: yyS[yypt-3].expr, Then: yyS[yypt-1].stmts})
 		}
 	case 8:
 		{

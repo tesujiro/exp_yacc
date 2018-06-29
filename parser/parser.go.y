@@ -65,7 +65,7 @@ stmt
 stmt_if
     : stmt_if ELSE IF expr '{' stmts '}'
     {
-            $$.(*ast.IfStmt).ElseIf = append($$.(*ast.IfStmt).ElseIf, ast.IfStmt{If: $4, Then: $6} )
+            $$.(*ast.IfStmt).ElseIf = append($$.(*ast.IfStmt).ElseIf, &ast.IfStmt{If: $4, Then: $6} )
     }
     | stmt_if ELSE '{' stmts '}'
     {
