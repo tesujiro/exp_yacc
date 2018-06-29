@@ -15,6 +15,9 @@ func TestInterpretor(t *testing.T) {
 		stderr string
 		stdout string
 	}{
+		{stdin: "123", stdout: "123"},
+		{stdin: "123.456", stdout: "123.456"},
+		{stdin: "\"abc\"", stdout: "\"abc\""},
 		{stdin: "+1+4", stdout: "5"},
 		{stdin: "-1+3", stdout: "2"},
 		{stdin: "1+1", stdout: "2"},
@@ -35,6 +38,8 @@ func TestInterpretor(t *testing.T) {
 		{stdin: "15%5", stdout: "0"},
 		{stdin: "16%5", stdout: "1"},
 		{stdin: "15%4.1", stdout: "3"},
+		{stdin: "\"a b c\"+\" d e f\"", stdout: "\"a b c d e f\""},
+		{stdin: "\"a b c\"-\" d e f\"", stdout: "0"},
 		{stdin: "15.2%7.1", stdout: "1"},
 		{stdin: "a=1;b=2;a+b", stdout: "3"},
 		{stdin: "a=1;b=2;a+1==b", stdout: "true"},

@@ -27,6 +27,21 @@ func toFloat64(val interface{}) float64 {
 	return f
 }
 
+func toString(val interface{}) string {
+	switch reflect.TypeOf(val).Kind() {
+	case reflect.String:
+		return val.(string)
+	case reflect.Int64, reflect.Int32, reflect.Int16, reflect.Int8, reflect.Int:
+		return fmt.Sprintf("%v", val)
+	case reflect.Float64, reflect.Float32:
+		return fmt.Sprintf("%v", val)
+	default:
+		return ""
+	}
+	s, _ := val.(string)
+	return s
+}
+
 func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 	switch expr.(type) {
 	case ast.IdentExpr:
@@ -50,6 +65,9 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 		} else {
 			return i, nil
 		}
+	case ast.StringExpr:
+		str := expr.(ast.StringExpr).Literal
+		return str, nil
 	case ast.ParentExpr:
 		sub := expr.(ast.ParentExpr).SubExpr
 		return evalExpr(sub, env)
@@ -109,6 +127,8 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 			l_kind := reflect.TypeOf(left).Kind()
 			r_kind := reflect.TypeOf(right).Kind()
 			switch {
+			case l_kind == reflect.String || r_kind == reflect.String:
+				return toString(left) + toString(right), nil
 			case l_kind == reflect.Int64 && r_kind == reflect.Int64:
 				return toInt64(left) + toInt64(right), nil
 			default:

@@ -18,7 +18,7 @@ import "github.com/tesujiro/exp_yacc/ast"
 %type<stmt>   stmt
 %type<stmt_if>   stmt_if
 %type<expr>   expr
-%token<token> IDENT NUMBER EQEQ NEQ GE LE IF ELSE
+%token<token> IDENT NUMBER STRING EQEQ NEQ GE LE IF ELSE
 
 %right '='
 %left IDENT
@@ -88,6 +88,10 @@ expr
     | NUMBER
     {
         $$ = ast.NumExpr{Literal: $1.Literal}
+    }
+    | STRING
+    {
+        $$ = ast.StringExpr{Literal: $1.Literal}
     }
     | '+' expr %prec UNARY
     {

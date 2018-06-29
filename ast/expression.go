@@ -10,6 +10,10 @@ type NumExpr struct {
 	Literal string
 }
 
+type StringExpr struct {
+	Literal string
+}
+
 type ParentExpr struct {
 	SubExpr Expr
 }
