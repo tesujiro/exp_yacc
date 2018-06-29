@@ -48,7 +48,7 @@ func TestInterpretor(t *testing.T) {
 		{stdin: "a=1;b=0.1;c=15;(a+b)*c/0.5", stdout: "33"},
 		{stdin: "a=1;if a==1 { a=2 }", stdout: "2"},
 		{stdin: "a=1;if a==1 { a=2 };a", stdout: "2"},
-		{stdin: "a=1;if a==1 { env_test_xx=2 };env_test_xx", stdout: "Eval error:unknown symbol 'env_test_xx'"},
+		{stdin: "a=1;if a==1 { env_test=2 };env_test", stdout: "Eval error:unknown symbol 'env_test'"},
 		{stdin: "a=2;if a==1 { a=2 } else { a=3;b=4 }", stdout: "4"},
 		{stdin: "a=1;b=1;if a==1 { b=2 };b", stdout: "2"},
 		{stdin: "a=1;if a==1 { a=11 } else if a==2 { a=12 } else if a==3 { a=13 };a", stdout: "11"},
@@ -56,7 +56,7 @@ func TestInterpretor(t *testing.T) {
 		{stdin: "a=3;if a==1 { a=11 } else if a==2 { a=12 } else if a==3 { a=13 };a", stdout: "13"},
 		{stdin: "a=1;if a==1 { env_test=11 } else if a==2 { env_test=12 } else { env_test=13 };env_test", stdout: "Eval error:unknown symbol 'env_test'"},
 		{stdin: "a=2;if a==1 { env_test=11 } else if a==2 { env_test=12 } else { env_test=13 };env_test", stdout: "Eval error:unknown symbol 'env_test'"},
-		{stdin: "a=2;if a==1 { env_test=11 } else if a==2 { env_test=12 } else { env_test=13 };env_test", stdout: "Eval error:unknown symbol 'env_test'"},
+		{stdin: "a=3;if a==1 { env_test=11 } else if a==2 { env_test=12 } else { env_test=13 };env_test", stdout: "Eval error:unknown symbol 'env_test'"},
 	}
 	realStdin := os.Stdin
 	realStdout := os.Stdout
