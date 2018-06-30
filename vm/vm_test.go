@@ -72,8 +72,8 @@ func TestNumbers(t *testing.T) {
 		env := NewEnv()
 		l := new(parser.Lexer)
 		l.Init(strings.NewReader(test.script))
-		parser.Parse(l)
-		if actual, err := Run(l.Result, env); err != nil {
+		parseResult, _ := parser.Parse(l)
+		if actual, err := Run(parseResult, env); err != nil {
 			if test.errMessage == "" || err.Error() != test.errMessage {
 				t.Errorf("Run error:%#v want%#v - script:%v\n", err, test.errMessage, test.script)
 			}

@@ -488,7 +488,7 @@ yynewstate:
 	case 1:
 		{
 			yyVAL.stmts = yyS[yypt-1].stmts
-			yylex.(*Lexer).Result = yyVAL.stmts
+			yylex.(*Lexer).result = yyVAL.stmts
 		}
 	case 2:
 		{

@@ -36,12 +36,19 @@ func run() {
 
 		l := new(parser.Lexer)
 		l.Init(strings.NewReader(source))
-		parser.Parse(l)
+		ast, parseError := parser.Parse(l)
 		if *debug {
-			fmt.Printf("%#v\n", l.Result)
+			fmt.Printf("%#v\n", ast)
 		}
-		//TODO: Error Check
-		if res, err := vm.Run(l.Result, env); err != nil {
+		if parseError != nil {
+			if parseError.Error() == "unexpected $end" {
+				continue
+			} else {
+				fmt.Printf("Syntax error: %v \n", parseError)
+				//fmt.Printf("Syntax error: %v at %v\n", e, l.Position) //TODO
+			}
+		}
+		if res, err := vm.Run(ast, env); err != nil {
 			fmt.Printf("Eval error:%v\n", err)
 		} else {
 			if *debug {

@@ -35,7 +35,7 @@ program
     : stmts opt_term
     {
         $$ = $1
-        yylex.(*Lexer).Result = $$
+        yylex.(*Lexer).result = $$
     }
 
 stmts

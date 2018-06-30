@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"fmt"
+	"errors"
 	"text/scanner"
 
 	"github.com/tesujiro/exp_yacc/ast"
@@ -9,8 +9,8 @@ import (
 
 type Lexer struct {
 	scanner.Scanner
-	//Result ast.Expr
-	Result []ast.Stmt
+	result []ast.Stmt
+	err    error
 }
 
 // opName is a correction of operation names.
@@ -71,10 +71,14 @@ func (l *Lexer) Lex(lval *yySymType) int {
 }
 
 func (l *Lexer) Error(e string) {
-	fmt.Printf("Syntax error: %v at %v\n", e, l.Position)
+	l.err = errors.New(e)
+	//l.position = l.Position //TODO
 }
 
-func Parse(yylex yyLexer) int {
-	//fmt.Println("Parse")
-	return yyParse(yylex)
+func Parse(yylex yyLexer) ([]ast.Stmt, error) {
+	l := yylex.(*Lexer)
+	if yyParse(yylex) != 0 {
+		return nil, l.err
+	}
+	return l.result, nil
 }
