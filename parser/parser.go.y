@@ -32,7 +32,11 @@ import "github.com/tesujiro/exp_yacc/ast"
 %%
 
 program
-    : stmts opt_term
+    : opt_term
+    {
+        $$ = nil
+    }
+    | stmts opt_term
     {
         $$ = $1
         yylex.(*Lexer).result = $$

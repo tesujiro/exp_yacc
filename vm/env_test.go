@@ -1,7 +1,6 @@
 package vm
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -24,7 +23,6 @@ func TestEnv(t *testing.T) {
 			t.Errorf("got %v\nwant %v", actual, c.v)
 			continue
 		}
-		fmt.Printf("env=%#v\n", e)
 	}
 }
 
@@ -50,7 +48,6 @@ func TestChildEnv(t *testing.T) {
 			return
 		}
 	}
-	fmt.Printf("root=%#v\n", root)
 
 	child := root.NewEnv()
 	for _, test := range tests {
@@ -65,13 +62,10 @@ func TestChildEnv(t *testing.T) {
 			return
 		}
 	}
-	fmt.Printf("child=%#v\n", child)
 
 	child.Destroy()
 	if child.parent != nil {
 		t.Errorf("child.parent != nil")
 	}
-	fmt.Printf("after Destroy child=%#v\n", child)
-	fmt.Printf("root=%#v\n", root)
 
 }

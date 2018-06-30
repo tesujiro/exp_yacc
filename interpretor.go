@@ -19,17 +19,15 @@ func main() {
 }
 
 func run() {
-	//l := new(parser.Lexer)
-	//l.Init(strings.NewReader(os.Args[1]))
 	env := vm.NewEnv()
 	line_scanner := bufio.NewScanner(os.Stdin) // This Scanner
 	var source string
 
 	for line_scanner.Scan() {
 		source += line_scanner.Text()
-		if source == "" {
-			continue
-		}
+		//if source == "" {
+		//continue
+		//}
 		if source == "exit" || source == "quit" {
 			break
 		}
@@ -42,6 +40,7 @@ func run() {
 		}
 		if parseError != nil {
 			if parseError.Error() == "unexpected $end" {
+				source += "\n"
 				continue
 			} else {
 				fmt.Printf("Syntax error: %v \n", parseError)
