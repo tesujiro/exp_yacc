@@ -40,7 +40,9 @@ func run() {
 		}
 		if parseError != nil {
 			if parseError.Error() == "unexpected $end" {
+				// caution: scanner.Scan() does not return "end of line" , this is just for separating token
 				source += "\n"
+				//fmt.Println("source;[" + source + "]")
 				continue
 			} else {
 				fmt.Printf("Syntax error: %v \n", parseError)

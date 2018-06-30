@@ -51,6 +51,12 @@ stmts
     {
         $$ = append($1,$3)
     }
+    /* conflict
+    | stmts stmt
+    {
+        $$ = append($1,$2)
+    }
+    */
 
 stmt
     : stmt_if
@@ -159,9 +165,10 @@ opt_term
     | term
 
 term
-    : ';' newLines
+    : ';'
+/*
+    | ';' newLines
     | newLines
-    | ';'
 
 newLines
     : newLine
@@ -169,5 +176,6 @@ newLines
 
 newLine
     : '\n'
+*/
 
 %%
