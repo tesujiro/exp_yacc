@@ -9,8 +9,10 @@ import (
 
 type Lexer struct {
 	scanner.Scanner
-	result []ast.Stmt
-	err    error
+	result  []ast.Stmt
+	err     error
+	buffer  []int
+	curLine int
 }
 
 // opName is a correction of operation names.
@@ -19,8 +21,29 @@ var opName = map[string]int{
 	"else": ELSE,
 }
 
-func (l *Lexer) Lex(lval *yySymType) int {
+func (l *Lexer) getToken() int {
+	if len(l.buffer) > 0 {
+		token := l.buffer[0]
+		l.buffer = l.buffer[1:]
+		return token
+	}
 	token := int(l.Scan())
+	if l.Position.Line > l.curLine {
+		// Add '\n' to buffer
+		for ; l.Position.Line > l.curLine; l.curLine++ {
+			l.buffer = append(l.buffer, int('\n'))
+		}
+		l.buffer = append(l.buffer, int(token))
+		l.curLine = l.Position.Line
+		return l.getToken()
+	}
+	l.curLine = l.Position.Line
+	return token
+}
+
+func (l *Lexer) Lex(lval *yySymType) int {
+	//token := int(l.Scan())
+	token := l.getToken()
 	switch token {
 	case scanner.Ident:
 		if name, ok := opName[l.TokenText()]; ok {

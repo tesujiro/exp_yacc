@@ -47,16 +47,10 @@ stmts
     {
         $$ = []ast.Stmt{$2}
     }
-    | stmts term stmt
+    | stmts term stmt 
     {
         $$ = append($1,$3)
     }
-    /* conflict
-    | stmts stmt
-    {
-        $$ = append($1,$2)
-    }
-    */
 
 stmt
     : stmt_if
@@ -73,11 +67,11 @@ stmt
     }
 
 stmt_if
-    : stmt_if ELSE IF expr '{' stmts '}'
+    : stmt_if ELSE IF expr '{' program '}'
     {
             $$.(*ast.IfStmt).ElseIf = append($$.(*ast.IfStmt).ElseIf, &ast.IfStmt{If: $4, Then: $6} )
     }
-    | stmt_if ELSE '{' stmts '}'
+    | stmt_if ELSE '{' program '}'
     {
         if $$.(*ast.IfStmt).Else != nil {
             yylex.Error("multiple else statement")
@@ -85,7 +79,7 @@ stmt_if
             $$.(*ast.IfStmt).Else = append($$.(*ast.IfStmt).Else, $4...)
         }
     }
-    | IF expr '{' stmts '}'
+    | IF expr '{' program '}'
     {
         $$ = &ast.IfStmt{If: $2, Then: $4, Else: nil}
     }
@@ -165,10 +159,9 @@ opt_term
     | term
 
 term
-    : ';'
-/*
-    | ';' newLines
+    : ';' newLines
     | newLines
+    | ';'
 
 newLines
     : newLine
@@ -176,6 +169,5 @@ newLines
 
 newLine
     : '\n'
-*/
 
 %%

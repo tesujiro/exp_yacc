@@ -67,6 +67,8 @@ func TestNumbers(t *testing.T) {
 		{script: "a=1;if a==1 { env_test=11 } else if a==2 { env_test=12 } else { env_test=13 };env_test", errMessage: "unknown symbol 'env_test'"},
 		{script: "a=2;if a==1 { env_test=11 } else if a==2 { env_test=12 } else { env_test=13 };env_test", errMessage: "unknown symbol 'env_test'"},
 		{script: "a=3;if a==1 { env_test=11 } else if a==2 { env_test=12 } else { env_test=13 };env_test", errMessage: "unknown symbol 'env_test'"},
+		{script: "a=1;if a==1 { a=2\n a=3 }", result: int64(3)},
+		{script: "a=1;if a==1 { a=2\n a=3\n }", result: int64(3)},
 	}
 	for _, test := range tests {
 		env := NewEnv()
