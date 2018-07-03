@@ -64,6 +64,7 @@ func TestNumbers(t *testing.T) {
 		{script: "a=1;if a==1 { a=11 } else if a==2 { a=12 } else if a==3 { a=13 };a", result: int64(11)},
 		{script: "a=2;if a==1 { a=11 } else if a==2 { a=12 } else if a==3 { a=13 };a", result: int64(12)},
 		{script: "a=3;if a==1 { a=11 } else if a==2 { a=12 } else if a==3 { a=13 };a", result: int64(13)},
+		{script: "a=4;if a==1 { a=11 } else if a==2 { a=12 } else if a==3 { a=13 } else { a=14 };a", result: int64(14)},
 		{script: "a=1;if a==1 { env_test=11 } else if a==2 { env_test=12 } else { env_test=13 };env_test", errMessage: "unknown symbol 'env_test'"},
 		{script: "a=2;if a==1 { env_test=11 } else if a==2 { env_test=12 } else { env_test=13 };env_test", errMessage: "unknown symbol 'env_test'"},
 		{script: "a=3;if a==1 { env_test=11 } else if a==2 { env_test=12 } else { env_test=13 };env_test", errMessage: "unknown symbol 'env_test'"},

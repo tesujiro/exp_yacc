@@ -145,8 +145,8 @@ var (
 		5:  {31, 1},
 		6:  {31, 3},
 		7:  {31, 1},
-		8:  {32, 7},
-		9:  {32, 5},
+		8:  {32, 5},
+		9:  {32, 7},
 		10: {32, 5},
 		11: {20, 1},
 		12: {20, 1},
@@ -241,7 +241,7 @@ var (
 		// 50
 		{8, 8, 8, 4: 44, 8, 41, 8, 8, 8, 23: 8, 43, 42, 38, 40, 29: 87, 39},
 		{2: 88},
-		{2: 26, 26, 26, 6: 26, 28: 26},
+		{2: 28, 28, 28, 6: 28, 28: 28},
 		{56, 57, 5: 58, 7: 53, 54, 55, 20: 90},
 		{61, 62, 30, 30, 30, 6: 30, 10: 65, 63, 64, 69, 68, 66, 70, 71, 67},
 		// 55
@@ -249,12 +249,12 @@ var (
 		{56, 57, 5: 58, 7: 53, 54, 55, 20: 96},
 		{8, 8, 8, 4: 44, 8, 41, 8, 8, 8, 23: 8, 43, 42, 38, 40, 29: 94, 39},
 		{2: 95},
-		{2: 27, 27, 27, 6: 27, 28: 27},
+		{2: 26, 26, 26, 6: 26, 28: 26},
 		// 60
 		{61, 62, 10: 65, 63, 64, 69, 68, 66, 70, 71, 67, 97},
 		{8, 8, 8, 4: 44, 8, 41, 8, 8, 8, 23: 8, 43, 42, 38, 40, 29: 98, 39},
 		{2: 99},
-		{2: 28, 28, 28, 6: 28, 28: 28},
+		{2: 27, 27, 27, 6: 27, 28: 27},
 		{2: 33, 33, 33, 6: 33},
 	}
 )
@@ -515,19 +515,20 @@ yynewstate:
 		}
 	case 8:
 		{
-			yyVAL.stmt_if.(*ast.IfStmt).ElseIf = append(yyVAL.stmt_if.(*ast.IfStmt).ElseIf, &ast.IfStmt{If: yyS[yypt-3].expr, Then: yyS[yypt-1].stmts})
+			yyVAL.stmt_if = &ast.IfStmt{If: yyS[yypt-3].expr, Then: yyS[yypt-1].stmts, Else: nil}
 		}
 	case 9:
+		{
+			yyVAL.stmt_if.(*ast.IfStmt).ElseIf = append(yyVAL.stmt_if.(*ast.IfStmt).ElseIf, &ast.IfStmt{If: yyS[yypt-3].expr, Then: yyS[yypt-1].stmts})
+		}
+	case 10:
 		{
 			if yyVAL.stmt_if.(*ast.IfStmt).Else != nil {
 				yylex.Error("multiple else statement")
 			} else {
-				yyVAL.stmt_if.(*ast.IfStmt).Else = append(yyVAL.stmt_if.(*ast.IfStmt).Else, yyS[yypt-1].stmts...)
+				//$$.(*ast.IfStmt).Else = append($$.(*ast.IfStmt).Else, $4...)
+				yyVAL.stmt_if.(*ast.IfStmt).Else = yyS[yypt-1].stmts
 			}
-		}
-	case 10:
-		{
-			yyVAL.stmt_if = &ast.IfStmt{If: yyS[yypt-3].expr, Then: yyS[yypt-1].stmts, Else: nil}
 		}
 	case 11:
 		{

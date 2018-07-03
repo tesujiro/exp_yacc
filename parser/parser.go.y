@@ -67,7 +67,11 @@ stmt
     }
 
 stmt_if
-    : stmt_if ELSE IF expr '{' program '}'
+    : IF expr '{' program '}'
+    {
+        $$ = &ast.IfStmt{If: $2, Then: $4, Else: nil}
+    }
+    | stmt_if ELSE IF expr '{' program '}'
     {
             $$.(*ast.IfStmt).ElseIf = append($$.(*ast.IfStmt).ElseIf, &ast.IfStmt{If: $4, Then: $6} )
     }
@@ -76,12 +80,9 @@ stmt_if
         if $$.(*ast.IfStmt).Else != nil {
             yylex.Error("multiple else statement")
         } else {
-            $$.(*ast.IfStmt).Else = append($$.(*ast.IfStmt).Else, $4...)
+            //$$.(*ast.IfStmt).Else = append($$.(*ast.IfStmt).Else, $4...)
+            $$.(*ast.IfStmt).Else = $4
         }
-    }
-    | IF expr '{' program '}'
-    {
-        $$ = &ast.IfStmt{If: $2, Then: $4, Else: nil}
     }
 
 expr

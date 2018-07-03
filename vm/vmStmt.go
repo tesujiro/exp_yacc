@@ -36,25 +36,21 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 			}
 			return result, nil
 		}
-		done := false
-		if len(stmt.(*ast.IfStmt).ElseIf) > 0 {
-			for _, stmt := range stmt.(*ast.IfStmt).ElseIf {
-				result, err := evalExpr(stmt.(*ast.IfStmt).If, child)
+		for _, stmt := range stmt.(*ast.IfStmt).ElseIf {
+			result, err := evalExpr(stmt.(*ast.IfStmt).If, child)
+			if err != nil {
+				return nil, err
+			}
+			if result.(bool) {
+				result, err = Run(stmt.(*ast.IfStmt).Then, child)
 				if err != nil {
 					return nil, err
 				}
-				if result.(bool) {
-					done = true
-					result, err = Run(stmt.(*ast.IfStmt).Then, child)
-					if err != nil {
-						return nil, err
-					}
-					return result, nil
-				}
+				return result, nil
 			}
 		}
 
-		if !done && len(stmt.(*ast.IfStmt).Else) > 0 {
+		if len(stmt.(*ast.IfStmt).Else) > 0 {
 			result, err = Run(stmt.(*ast.IfStmt).Else, child)
 			if err != nil {
 				return nil, err
