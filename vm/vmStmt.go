@@ -34,8 +34,6 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 			if err != nil {
 				return nil, err
 			}
-			//fmt.Printf("child=%#v\n", child)
-			//fmt.Printf("parent=%#v\n", env)
 			return result, nil
 		}
 		done := false
