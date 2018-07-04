@@ -28,3 +28,8 @@ type BinOpExpr struct {
 	Operator string
 	Right    Expr
 }
+
+type CallExpr struct {
+	Name     string
+	SubExprs []Expr
+}

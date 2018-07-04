@@ -8,6 +8,7 @@ import "github.com/tesujiro/exp_yacc/ast"
 %union{
     token ast.Token
     expr  ast.Expr
+    exprs  []ast.Expr
     stmt_if  ast.Stmt
     stmt  ast.Stmt
     stmts []ast.Stmt
@@ -18,7 +19,8 @@ import "github.com/tesujiro/exp_yacc/ast"
 %type<stmt>   stmt
 %type<stmt_if>   stmt_if
 %type<expr>   expr
-%token<token> IDENT NUMBER STRING EQEQ NEQ GE LE IF ELSE
+%type<exprs>   exprs
+%token<token> IDENT NUMBER STRING EQEQ NEQ GE LE IF ELSE FUNC
 
 %right '='
 %left IDENT
@@ -85,6 +87,20 @@ stmt_if
         }
     }
 
+exprs
+    : /* Nothing */
+    {
+        $$ = nil
+    }
+    | expr
+    {
+        $$ = []ast.Expr{$1}
+    }
+    | exprs ',' opt_newLines expr
+    {
+        $$ = append($1,$4)
+    }
+
 expr
     : IDENT
     {
@@ -97,6 +113,10 @@ expr
     | STRING
     {
         $$ = ast.StringExpr{Literal: $1.Literal}
+    }
+    | IDENT '(' exprs ')'
+    {
+        $$ = &ast.CallExpr{Name: $1.Literal, SubExprs:$3}
     }
     | '+' expr %prec UNARY
     {
@@ -163,6 +183,10 @@ term
     : ';' newLines
     | newLines
     | ';'
+
+opt_newLines
+    : /* nothing */
+    | newLines
 
 newLines
     : newLine

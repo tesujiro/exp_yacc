@@ -19,6 +19,7 @@ type Lexer struct {
 var opName = map[string]int{
 	"if":   IF,
 	"else": ELSE,
+	"func": FUNC,
 }
 
 func (l *Lexer) getToken() int {
