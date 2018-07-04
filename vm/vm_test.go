@@ -18,6 +18,9 @@ func TestNumbers(t *testing.T) {
 		result     interface{}
 		errMessage string
 	}{
+		{script: "true", result: true},
+		{script: "false", result: false},
+		{script: "nil", result: nil},
 		{script: "1", result: int64(1)},
 		{script: "1.1", result: float64(1.1)},
 		{script: "123", result: int64(123)},

@@ -14,6 +14,10 @@ type StringExpr struct {
 	Literal string
 }
 
+type ConstExpr struct {
+	Literal string
+}
+
 type ParentExpr struct {
 	SubExpr Expr
 }

@@ -68,6 +68,15 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 	case ast.StringExpr:
 		str := expr.(ast.StringExpr).Literal
 		return str, nil
+	case *ast.ConstExpr:
+		switch expr.(*ast.ConstExpr).Literal {
+		case "true":
+			return true, nil
+		case "false":
+			return false, nil
+		case "nil":
+			return nil, nil
+		}
 	case ast.ParentExpr:
 		sub := expr.(ast.ParentExpr).SubExpr
 		return evalExpr(sub, env)

@@ -20,7 +20,7 @@ import "github.com/tesujiro/exp_yacc/ast"
 %type<stmt_if>   stmt_if
 %type<expr>   expr
 %type<exprs>   exprs
-%token<token> IDENT NUMBER STRING EQEQ NEQ GE LE IF ELSE FUNC
+%token<token> IDENT NUMBER STRING TRUE FALSE NIL FUNC EQEQ NEQ GE LE IF ELSE
 
 %right '='
 %left IDENT
@@ -113,6 +113,18 @@ expr
     | STRING
     {
         $$ = ast.StringExpr{Literal: $1.Literal}
+    }
+    | TRUE
+    {
+        $$ = &ast.ConstExpr{Literal: $1.Literal}
+    }
+    | FALSE
+    {
+        $$ = &ast.ConstExpr{Literal: $1.Literal}
+    }
+    | NIL
+    {
+        $$ = &ast.ConstExpr{Literal: $1.Literal}
     }
     | IDENT '(' exprs ')'
     {
