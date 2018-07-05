@@ -2,6 +2,7 @@ package vm
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -84,6 +85,39 @@ func TestNumbers(t *testing.T) {
 				t.Errorf("Run error:%#v want%#v - script:%v\n", err, test.errMessage, test.script)
 			}
 		} else if actual != test.result {
+			t.Errorf("got %#v\nwant %#v - script: %v", actual, test.result, test.script)
+			continue
+		}
+	}
+}
+func TestFuncCall(t *testing.T) {
+	tests := []struct {
+		script     string
+		result     interface{}
+		errMessage string
+	}{
+		//{script: "println(\"hello!\")", result: 7},
+		{script: "println(\"hello!\")", result: []reflect.Value{reflect.ValueOf(7), reflect.ValueOf(error(nil))}},
+		//{script: "printf(\"hello,%v!\\n\",\"world\")", result: "hello,world!"},
+	}
+	for _, test := range tests {
+		env := NewEnv()
+		env.Define("println", fmt.Println)
+		env.Define("printf", fmt.Printf)
+
+		l := new(parser.Lexer)
+		l.Init(strings.NewReader(test.script))
+		parseResult, err := parser.Parse(l)
+		if err != nil {
+			fmt.Printf("Syntax error: %v \n", err)
+			continue
+		}
+		if actual, err := Run(parseResult, env); err != nil {
+			if test.errMessage == "" || err.Error() != test.errMessage {
+				t.Errorf("Run error:%#v want%#v - script:%v\n", err, test.errMessage, test.script)
+			}
+			//} else if actual != test.result {
+		} else if !reflect.DeepEqual(actual, test.result) {
 			t.Errorf("got %#v\nwant %#v - script: %v", actual, test.result, test.script)
 			continue
 		}

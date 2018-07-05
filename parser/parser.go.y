@@ -7,11 +7,12 @@ import "github.com/tesujiro/exp_yacc/ast"
 
 %union{
     token ast.Token
-    expr  ast.Expr
-    exprs  []ast.Expr
     stmt_if  ast.Stmt
     stmt  ast.Stmt
     stmts []ast.Stmt
+    expr  ast.Expr
+    exprs  []ast.Expr
+    ident_args []string
 }
 
 %type<stmts>  program
@@ -20,6 +21,7 @@ import "github.com/tesujiro/exp_yacc/ast"
 %type<stmt_if>   stmt_if
 %type<expr>   expr
 %type<exprs>   exprs
+%type<ident_args>   ident_args
 %token<token> IDENT NUMBER STRING TRUE FALSE NIL FUNC EQEQ NEQ GE LE IF ELSE
 
 %right '='
@@ -130,6 +132,10 @@ expr
     {
         $$ = &ast.CallExpr{Name: $1.Literal, SubExprs:$3}
     }
+    | FUNC IDENT '(' ident_args ')''{' program '}'
+    {
+    	$$ = &ast.FuncExpr{Name: $2.Literal, Args: $4, Stmts: $7}
+    }
     | '+' expr %prec UNARY
     {
         $$ = ast.UnaryExpr{Operator: "+", Expr:$2}
@@ -185,6 +191,20 @@ expr
     | expr LE expr
     {
         $$ = ast.BinOpExpr{Left: $1, Operator: "<=", Right: $3}
+    }
+
+ident_args
+    : /* nothing */
+    {
+    	$$ = []string{}
+    }
+    | IDENT
+    {
+    	$$ = []string{$1.Literal}
+    }
+    | ident_args ',' opt_newLines IDENT
+    {
+    	$$ = append($1,$4.Literal)
     }
 
 opt_term

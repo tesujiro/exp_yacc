@@ -77,6 +77,10 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 		case "nil":
 			return nil, nil
 		}
+	case *ast.FuncExpr:
+		return (defineFunc(expr.(*ast.FuncExpr), env))
+	case *ast.CallExpr:
+		return (callFunc(expr.(*ast.CallExpr), env))
 	case ast.ParentExpr:
 		sub := expr.(ast.ParentExpr).SubExpr
 		return evalExpr(sub, env)

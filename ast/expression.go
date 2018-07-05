@@ -33,6 +33,12 @@ type BinOpExpr struct {
 	Right    Expr
 }
 
+type FuncExpr struct {
+	Name  string
+	Args  []string
+	Stmts []Stmt
+}
+
 type CallExpr struct {
 	Name     string
 	SubExprs []Expr
