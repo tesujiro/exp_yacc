@@ -97,13 +97,15 @@ func TestFuncCall(t *testing.T) {
 		errMessage string
 	}{
 		//{script: "println(\"hello!\")", result: 7},
-		{script: "println(\"hello!\")", result: []reflect.Value{reflect.ValueOf(7), reflect.ValueOf(error(nil))}},
+		//{script: "println(\"hello!\")", result: []reflect.Value{reflect.ValueOf(7), reflect.ValueOf(error(nil))}},
+		//{script: "func Fn(a){a*3;};Fn(10)", result: []reflect.Value{reflect.ValueOf(7), reflect.ValueOf(error(nil))}},
+		{script: "func Fn(a){3;};Fn(10)", result: reflect.ValueOf(int64(3))},
 		//{script: "printf(\"hello,%v!\\n\",\"world\")", result: "hello,world!"},
 	}
 	for _, test := range tests {
 		env := NewEnv()
-		env.Define("println", fmt.Println)
-		env.Define("printf", fmt.Printf)
+		env.DefineValue("println", reflect.ValueOf(fmt.Println))
+		env.DefineValue("printf", reflect.ValueOf(fmt.Printf))
 
 		l := new(parser.Lexer)
 		l.Init(strings.NewReader(test.script))
@@ -116,9 +118,11 @@ func TestFuncCall(t *testing.T) {
 			if test.errMessage == "" || err.Error() != test.errMessage {
 				t.Errorf("Run error:%#v want%#v - script:%v\n", err, test.errMessage, test.script)
 			}
-			//} else if actual != test.result {
-		} else if !reflect.DeepEqual(actual, test.result) {
+		} else if actual.(reflect.Value).Interface() != test.result.(reflect.Value).Interface() {
+			//} else if !reflect.DeepEqual(actual, test.result) {
 			t.Errorf("got %#v\nwant %#v - script: %v", actual, test.result, test.script)
+			fmt.Println("actual Type:", reflect.TypeOf(actual), "\tValue:", reflect.ValueOf(actual))
+			fmt.Println("want Type:", reflect.TypeOf(test.result), "\tValue:", reflect.ValueOf(test.result))
 			continue
 		}
 	}

@@ -1,7 +1,6 @@
 package vm
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 
@@ -11,13 +10,19 @@ import (
 func defineFunc(funcExpr *ast.FuncExpr, env *Env) (interface{}, error) {
 	// FuncType
 	//argTypes := make([]reflect.Type, len(funcExpr.Args))
-	argTypes := make([]reflect.Type, len(funcExpr.Args))
-	for i := 0; i < len(argTypes); i++ {
-		argTypes[i] = reflect.TypeOf(interface{}(int64(1)))
+	inType := make([]reflect.Type, len(funcExpr.Args))
+	for i := 0; i < len(inType); i++ {
+		//inType[i] = reflect.TypeOf(int64(1))
+		inType[i] = reflect.TypeOf(int64(1))
+		//inType[i] = reflect.TypeOf(interface{}(int64(1)))
 	}
 
 	//TODO: variadic
-	funcType := reflect.FuncOf(argTypes, []reflect.Type{reflect.TypeOf(interface{}(int64(1))), reflect.TypeOf(errors.New(""))}, false)
+	outType := []reflect.Type{reflect.TypeOf(reflect.Value{}), reflect.TypeOf(reflect.Value{})}
+	//outType := []reflect.Type{reflect.TypeOf(interface{}(int64(1))), reflect.TypeOf(reflect.Value{})}
+	//outType := []reflect.Type{reflect.TypeOf(int64(1)), reflect.TypeOf(reflect.Value{})}
+	funcType := reflect.FuncOf(inType, outType, false)
+	//funcType := reflect.FuncOf(inType, []reflect.Type{reflect.TypeOf(interface{}(int64(1))), reflect.TypeOf(errors.New(""))}, false)
 
 	// FuncDefinition
 	//runVmFunction := func(in []interface{}) (interface{}, error) {
@@ -29,11 +34,20 @@ func defineFunc(funcExpr *ast.FuncExpr, env *Env) (interface{}, error) {
 		//
 		//
 		//
+		var errValue reflect.Value
+		var errorType = reflect.ValueOf([]error{nil}).Index(0).Type()
+		var reflectValueErrorNilValue = reflect.ValueOf(reflect.New(errorType).Elem())
+		errValue = reflectValueErrorNilValue
 
 		if rv, err := Run(funcExpr.Stmts, newEnv); err != nil {
 			return []reflect.Value{reflect.ValueOf(interface{}(nil)), reflect.ValueOf(err)}
 		} else {
-			return []reflect.Value{reflect.ValueOf(interface{}(rv)), reflect.ValueOf(error(nil))}
+			fmt.Println("rv: Type", reflect.TypeOf(rv), "\tValue:", reflect.ValueOf(rv))
+			//return []reflect.Value{reflect.ValueOf(rv), reflect.ValueOf(errValue)}
+			return []reflect.Value{reflect.ValueOf(reflect.ValueOf(rv)), reflect.ValueOf(errValue)}
+			//return []reflect.Value{reflect.ValueOf(rv), reflect.ValueOf(error(nil))}
+			//return []reflect.Value{reflect.ValueOf(interface{}(rv)), reflect.ValueOf(error(nil))}
+			//return []reflect.Value{reflect.ValueOf(reflect.ValueOf(interface{}(rv))), reflect.ValueOf(error(nil))}
 		}
 		return []reflect.Value{reflect.ValueOf(interface{}(nil)), reflect.ValueOf(error(nil))}
 	}
@@ -54,7 +68,7 @@ func defineFunc(funcExpr *ast.FuncExpr, env *Env) (interface{}, error) {
 }
 
 func callFunc(callExpr *ast.CallExpr, env *Env) (interface{}, error) {
-	fn, err := env.GetValue(callExpr.Name)
+	f, err := env.GetValue(callExpr.Name)
 	//fn, err := env.Get(callExpr.Name)
 	//fmt.Printf("fn: %#v\n", fn)
 	//fmt.Printf("TypeOf(fn): %#v\n", reflect.TypeOf(fn))
@@ -66,7 +80,6 @@ func callFunc(callExpr *ast.CallExpr, env *Env) (interface{}, error) {
 	}
 	//fmt.Printf("callExpr=%#v\tfn=%#v\n", callExpr, fn)
 	//f := reflect.ValueOf(fn)
-	f := fn
 	if f.Kind() == reflect.Interface && !f.IsNil() {
 		f = f.Elem()
 	}
@@ -77,7 +90,12 @@ func callFunc(callExpr *ast.CallExpr, env *Env) (interface{}, error) {
 	} else {
 		fmt.Printf("args: %#v\n", args)
 		refvals := f.Call(args)
-		return refvals, nil
+		//refvals := f.CallSlice(args)
+		fmt.Println("refvals: type ", reflect.TypeOf(refvals), "\tValue ", reflect.ValueOf(refvals))
+		fmt.Println("refvals[0]: type ", reflect.TypeOf(refvals[0]), "\tValue ", reflect.ValueOf(refvals[0]))
+		//return reflect.ValueOf(refvals[0]), nil
+		return refvals[0].Interface(), nil
+		//return refvals[0].Interface(), refvals[1].Interface()
 	}
 	return nil, nil
 }
@@ -94,13 +112,21 @@ func callArgs(f reflect.Value, callExpr *ast.CallExpr, env *Env) ([]reflect.Valu
 	}
 	// TODO: check args length
 	//
-	args := make([]reflect.Value, 0, f.Type().NumIn())
-	fmt.Printf("NumIn: %#v\n", f.Type().NumIn())
-	for _, subExpr := range callExpr.SubExprs {
+	//args := make([]reflect.Value, f.Type().NumIn())
+	args := make([]reflect.Value, f.Type().NumIn(), f.Type().NumIn())
+	//args := []reflect.Value{}
+	//fmt.Printf("NumIn: %#v\n", f.Type().NumIn())
+	//fmt.Printf("len(SubExprs): %#v\n", len(callExpr.SubExprs))
+	for k, subExpr := range callExpr.SubExprs {
 		if arg, err := evalExpr(subExpr, env); err != nil {
 			return nil, err
 		} else {
-			args = append(args, reflect.ValueOf(arg))
+			//args[k] = reflect.ValueOf(reflect.ValueOf(arg))
+			args[k] = reflect.ValueOf(arg)
+			//args = append(args, arg)
+			//args = append(args, reflect.ValueOf(arg))
+			//args = append(args, reflect.ValueOf(reflect.ValueOf(arg)))
+			//args = append(args, reflect.ValueOf(reflect.ValueOf(reflect.ValueOf(arg))))
 			//fmt.Printf("arg: %#v\n", arg)
 		}
 	}
