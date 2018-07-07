@@ -14,8 +14,8 @@ type Env struct {
 // Global Scope
 func NewEnv() *Env {
 	return &Env{
-		env:    make(map[string]interface{}),
-		val:    make(map[string]reflect.Value),
+		env: make(map[string]interface{}),
+		//val:    make(map[string]reflect.Value),
 		parent: nil,
 	}
 }
@@ -53,10 +53,12 @@ func (e *Env) Define(k string, v interface{}) error {
 	return nil
 }
 
+/*
 func (e *Env) DefineValue(k string, v reflect.Value) error {
 	e.val[k] = v
 	return nil
 }
+*/
 
 func (e *Env) Get(k string) (interface{}, error) {
 	//fmt.Printf("Get(%#v)\n", k)
@@ -69,6 +71,7 @@ func (e *Env) Get(k string) (interface{}, error) {
 	return e.parent.Get(k)
 }
 
+/*
 func (e *Env) GetValue(k string) (reflect.Value, error) {
 	//fmt.Printf("Get(%#v)\n", k)
 	if v, ok := e.val[k]; ok {
@@ -80,3 +83,4 @@ func (e *Env) GetValue(k string) (reflect.Value, error) {
 	}
 	return e.parent.GetValue(k)
 }
+*/

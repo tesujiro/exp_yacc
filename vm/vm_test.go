@@ -98,16 +98,17 @@ func TestFuncCall(t *testing.T) {
 	}{
 		//{script: "println(\"hello!\")", result: 7},
 		//{script: "println(\"hello!\")", result: []reflect.Value{reflect.ValueOf(7), reflect.ValueOf(error(nil))}},
-		//{script: "func Fn(a){a*3;};Fn(10)", result: []reflect.Value{reflect.ValueOf(7), reflect.ValueOf(error(nil))}},
-		//{script: "func Fn(a){3;};Fn(10)", result: reflect.ValueOf(int64(3))},
 		{script: "func Fn(a){3;};Fn(10)", result: int64(3)},
 		{script: "func Fn(a){a*10;};Fn(10)", result: int64(100)},
 		{script: "func Fn(a){a*10;};b=Fn(10);b*2", result: int64(200)},
+		{script: "func Add(a1,a2){a1+a2;};Add(1,5)", result: int64(6)},
+		{script: "func Add(a1,a2){a1+a2;};Add(1.1,1.2)", result: float64(2.3)},
+		{script: "func Add(a1,a2){a1+a2;};Add(\"hello,\",\"world!\")", result: "hello,world!"},
 	}
 	for _, test := range tests {
 		env := NewEnv()
-		env.DefineValue("println", reflect.ValueOf(fmt.Println))
-		env.DefineValue("printf", reflect.ValueOf(fmt.Printf))
+		env.Define("println", reflect.ValueOf(fmt.Println))
+		env.Define("printf", reflect.ValueOf(fmt.Printf))
 
 		l := new(parser.Lexer)
 		l.Init(strings.NewReader(test.script))
