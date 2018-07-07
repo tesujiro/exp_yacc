@@ -63,7 +63,7 @@ stmt
     }
     | expr '=' expr
     {
-        $$ = &ast.AssStmt{Left: $1, Right: $3}
+        $$ = &ast.AssStmt{Left: []ast.Expr{$1}, Right: []ast.Expr{$3}}
     }
     | expr
     {

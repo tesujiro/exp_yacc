@@ -19,7 +19,12 @@ func Run(stmts []ast.Stmt, env *Env) (interface{}, error) {
 func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 	switch stmt.(type) {
 	case *ast.AssStmt:
-		return evalAssExpr(stmt.(*ast.AssStmt).Left, stmt.(*ast.AssStmt).Right, env)
+		assStmt := stmt.(*ast.AssStmt)
+		left, right := assStmt.Left, assStmt.Right
+		switch {
+		case len(left) == 1 && len(right) == 1:
+			return evalAssExpr(left[0], right[0], env)
+		}
 	case *ast.ExprStmt:
 		return evalExpr(stmt.(*ast.ExprStmt).Expr, env)
 	case *ast.IfStmt:

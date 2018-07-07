@@ -3,8 +3,8 @@ package ast
 type Stmt interface{}
 
 type AssStmt struct {
-	Left  Expr
-	Right Expr
+	Left  []Expr
+	Right []Expr
 }
 
 type ExprStmt struct {

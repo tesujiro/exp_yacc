@@ -576,7 +576,7 @@ yynewstate:
 		}
 	case 6:
 		{
-			yyVAL.stmt = &ast.AssStmt{Left: yyS[yypt-2].expr, Right: yyS[yypt-0].expr}
+			yyVAL.stmt = &ast.AssStmt{Left: []ast.Expr{yyS[yypt-2].expr}, Right: []ast.Expr{yyS[yypt-0].expr}}
 		}
 	case 7:
 		{
