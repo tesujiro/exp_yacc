@@ -106,6 +106,7 @@ func TestFuncCall(t *testing.T) {
 		{script: "func Add(a1,a2){return a1+a2;};Add(\"hello,\",\"world!\")", result: "hello,world!"},
 		{script: "func Cross(a1,a2){return a2,a1;};Cross(1,5)", result: []interface{}{int64(5), int64(1)}},
 		{script: "func Cross(a1,a2){return a2,a1;};Cross(\"a\",\"b\")", result: []interface{}{"b", "a"}},
+		{script: "a=1;func Fn(){a=100;};Fn();a", result: int64(100)},
 	}
 	for _, test := range tests {
 		env := NewEnv()
