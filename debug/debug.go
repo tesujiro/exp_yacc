@@ -12,6 +12,12 @@ func Off() {
 	debug = false
 }
 
+func Println(a ...interface{}) {
+	if debug {
+		fmt.Println(a...)
+	}
+}
+
 func Printf(format string, a ...interface{}) {
 	if debug {
 		fmt.Printf(format, a...)
