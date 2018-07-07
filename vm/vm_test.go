@@ -99,8 +99,10 @@ func TestFuncCall(t *testing.T) {
 		//{script: "println(\"hello!\")", result: 7},
 		//{script: "println(\"hello!\")", result: []reflect.Value{reflect.ValueOf(7), reflect.ValueOf(error(nil))}},
 		//{script: "func Fn(a){a*3;};Fn(10)", result: []reflect.Value{reflect.ValueOf(7), reflect.ValueOf(error(nil))}},
-		{script: "func Fn(a){3;};Fn(10)", result: reflect.ValueOf(int64(3))},
-		//{script: "printf(\"hello,%v!\\n\",\"world\")", result: "hello,world!"},
+		//{script: "func Fn(a){3;};Fn(10)", result: reflect.ValueOf(int64(3))},
+		{script: "func Fn(a){3;};Fn(10)", result: int64(3)},
+		{script: "func Fn(a){a*10;};Fn(10)", result: int64(100)},
+		{script: "func Fn(a){a*10;};b=Fn(10);b*2", result: int64(200)},
 	}
 	for _, test := range tests {
 		env := NewEnv()
@@ -118,7 +120,8 @@ func TestFuncCall(t *testing.T) {
 			if test.errMessage == "" || err.Error() != test.errMessage {
 				t.Errorf("Run error:%#v want%#v - script:%v\n", err, test.errMessage, test.script)
 			}
-		} else if actual.(reflect.Value).Interface() != test.result.(reflect.Value).Interface() {
+		} else if actual != test.result {
+			//} else if actual.(reflect.Value).Interface() != test.result.(reflect.Value).Interface() {
 			//} else if !reflect.DeepEqual(actual, test.result) {
 			t.Errorf("got %#v\nwant %#v - script: %v", actual, test.result, test.script)
 			fmt.Println("actual Type:", reflect.TypeOf(actual), "\tValue:", reflect.ValueOf(actual))

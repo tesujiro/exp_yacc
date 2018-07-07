@@ -1,10 +1,10 @@
 package vm
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/tesujiro/exp_yacc/ast"
+	"github.com/tesujiro/exp_yacc/debug"
 )
 
 func defineFunc(funcExpr *ast.FuncExpr, env *Env) (interface{}, error) {
@@ -31,8 +31,14 @@ func defineFunc(funcExpr *ast.FuncExpr, env *Env) (interface{}, error) {
 		defer newEnv.Destroy()
 
 		// set value to newEnv
-		//
-		//
+		for i, arg := range funcExpr.Args {
+			if err := newEnv.Set(arg, in[i]); err != nil {
+				if err := newEnv.Define(arg, reflect.ValueOf(in[i]).Interface().(reflect.Value).Interface()); err != nil {
+					return []reflect.Value{reflect.ValueOf(interface{}(nil)), reflect.ValueOf(err)}
+				}
+			}
+		}
+		debug.Printf("newEnv: %#v\n", *newEnv)
 		//
 		var errValue reflect.Value
 		var errorType = reflect.ValueOf([]error{nil}).Index(0).Type()
@@ -42,7 +48,7 @@ func defineFunc(funcExpr *ast.FuncExpr, env *Env) (interface{}, error) {
 		if rv, err := Run(funcExpr.Stmts, newEnv); err != nil {
 			return []reflect.Value{reflect.ValueOf(interface{}(nil)), reflect.ValueOf(err)}
 		} else {
-			fmt.Println("rv: Type", reflect.TypeOf(rv), "\tValue:", reflect.ValueOf(rv))
+			//fmt.Println("rv: Type", reflect.TypeOf(rv), "\tValue:", reflect.ValueOf(rv))
 			//return []reflect.Value{reflect.ValueOf(rv), reflect.ValueOf(errValue)}
 			return []reflect.Value{reflect.ValueOf(reflect.ValueOf(rv)), reflect.ValueOf(errValue)}
 			//return []reflect.Value{reflect.ValueOf(rv), reflect.ValueOf(error(nil))}
@@ -88,13 +94,13 @@ func callFunc(callExpr *ast.CallExpr, env *Env) (interface{}, error) {
 	if args, err := callArgs(f, callExpr, env); err != nil {
 		return nil, err
 	} else {
-		fmt.Printf("args: %#v\n", args)
+		debug.Printf("args: %#v\n", args)
 		refvals := f.Call(args)
-		//refvals := f.CallSlice(args)
-		fmt.Println("refvals: type ", reflect.TypeOf(refvals), "\tValue ", reflect.ValueOf(refvals))
-		fmt.Println("refvals[0]: type ", reflect.TypeOf(refvals[0]), "\tValue ", reflect.ValueOf(refvals[0]))
+		debug.Println("refvals: type ", reflect.TypeOf(refvals), "\tValue ", reflect.ValueOf(refvals))
+		debug.Println("refvals[0]: type ", reflect.TypeOf(refvals[0]), "\tValue ", reflect.ValueOf(refvals[0]))
+		debug.Println("refvals[0]: type ", reflect.TypeOf(refvals[0].Interface()), "\tValue ", reflect.ValueOf(refvals[0].Interface()))
 		//return reflect.ValueOf(refvals[0]), nil
-		return refvals[0].Interface(), nil
+		return refvals[0].Interface().(reflect.Value).Interface(), nil
 		//return refvals[0].Interface(), refvals[1].Interface()
 	}
 	return nil, nil
