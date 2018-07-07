@@ -101,9 +101,11 @@ func TestFuncCall(t *testing.T) {
 		{script: "func Fn(a){3;};Fn(10)", result: int64(3)},
 		{script: "func Fn(a){a*10;};Fn(10)", result: int64(100)},
 		{script: "func Fn(a){a*10;};b=Fn(10);b*2", result: int64(200)},
-		{script: "func Add(a1,a2){a1+a2;};Add(1,5)", result: int64(6)},
-		{script: "func Add(a1,a2){a1+a2;};Add(1.1,1.2)", result: float64(2.3)},
-		{script: "func Add(a1,a2){a1+a2;};Add(\"hello,\",\"world!\")", result: "hello,world!"},
+		{script: "func Add(a1,a2){return a1+a2;};Add(1,5)", result: int64(6)},
+		{script: "func Add(a1,a2){return a1+a2;};Add(1.1,1.2)", result: float64(2.3)},
+		{script: "func Add(a1,a2){return a1+a2;};Add(\"hello,\",\"world!\")", result: "hello,world!"},
+		{script: "func Cross(a1,a2){return a2,a1;};Cross(1,5)", result: []interface{}{int64(5), int64(1)}},
+		{script: "func Cross(a1,a2){return a2,a1;};Cross(\"a\",\"b\")", result: []interface{}{"b", "a"}},
 	}
 	for _, test := range tests {
 		env := NewEnv()
@@ -121,9 +123,9 @@ func TestFuncCall(t *testing.T) {
 			if test.errMessage == "" || err.Error() != test.errMessage {
 				t.Errorf("Run error:%#v want%#v - script:%v\n", err, test.errMessage, test.script)
 			}
-		} else if actual != test.result {
+			//} else if actual != test.result {
 			//} else if actual.(reflect.Value).Interface() != test.result.(reflect.Value).Interface() {
-			//} else if !reflect.DeepEqual(actual, test.result) {
+		} else if !reflect.DeepEqual(actual, test.result) {
 			t.Errorf("got %#v\nwant %#v - script: %v", actual, test.result, test.script)
 			fmt.Println("actual Type:", reflect.TypeOf(actual), "\tValue:", reflect.ValueOf(actual))
 			fmt.Println("want Type:", reflect.TypeOf(test.result), "\tValue:", reflect.ValueOf(test.result))

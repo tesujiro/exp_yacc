@@ -57,6 +57,27 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 			}
 		}
 		return result, nil
+	case *ast.ReturnStmt:
+		returnStmt := stmt.(*ast.ReturnStmt)
+		length := len(returnStmt.Exprs)
+
+		resultExpr := make([]interface{}, length)
+		var err error
+		for i, expr := range returnStmt.Exprs {
+			resultExpr[i], err = evalExpr(expr, env)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		switch length {
+		case 0:
+			return nil, nil
+		case 1:
+			return resultExpr[0], nil
+		default:
+			return resultExpr, nil
+		}
 	}
 	return nil, nil
 }

@@ -17,3 +17,7 @@ type IfStmt struct {
 	Else   []Stmt
 	ElseIf []Stmt
 }
+
+type ReturnStmt struct {
+	Exprs []Expr
+}

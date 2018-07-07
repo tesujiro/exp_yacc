@@ -22,7 +22,7 @@ import "github.com/tesujiro/exp_yacc/ast"
 %type<expr>   expr
 %type<exprs>   exprs
 %type<ident_args>   ident_args
-%token<token> IDENT NUMBER STRING TRUE FALSE NIL FUNC EQEQ NEQ GE LE IF ELSE
+%token<token> IDENT NUMBER STRING TRUE FALSE NIL FUNC RETURN EQEQ NEQ GE LE IF ELSE
 
 %right '='
 %left IDENT
@@ -87,6 +87,10 @@ stmt_if
             //$$.(*ast.IfStmt).Else = append($$.(*ast.IfStmt).Else, $4...)
             $$.(*ast.IfStmt).Else = $4
         }
+    }
+    | RETURN exprs
+    {
+        $$ = &ast.ReturnStmt{Exprs: $2}
     }
 
 exprs

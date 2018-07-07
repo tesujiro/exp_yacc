@@ -17,12 +17,13 @@ type Lexer struct {
 
 // opName is a correction of operation names.
 var opName = map[string]int{
-	"true":  TRUE,
-	"false": FALSE,
-	"nil":   NIL,
-	"if":    IF,
-	"else":  ELSE,
-	"func":  FUNC,
+	"true":   TRUE,
+	"false":  FALSE,
+	"nil":    NIL,
+	"if":     IF,
+	"else":   ELSE,
+	"func":   FUNC,
+	"return": RETURN,
 }
 
 func (l *Lexer) getToken() int {
