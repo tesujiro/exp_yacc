@@ -44,15 +44,15 @@ func toString(val interface{}) string {
 
 func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 	switch expr.(type) {
-	case ast.IdentExpr:
-		id := expr.(ast.IdentExpr).Literal
+	case *ast.IdentExpr:
+		id := expr.(*ast.IdentExpr).Literal
 		if val, err := env.Get(id); err != nil {
 			return nil, err
 		} else {
 			return val, nil
 		}
-	case ast.NumExpr:
-		lit := expr.(ast.NumExpr).Literal
+	case *ast.NumExpr:
+		lit := expr.(*ast.NumExpr).Literal
 		if strings.Contains(lit, ".") {
 			if f, err := strconv.ParseFloat(lit, 64); err != nil {
 				return 0.0, err
@@ -65,8 +65,8 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 		} else {
 			return i, nil
 		}
-	case ast.StringExpr:
-		str := expr.(ast.StringExpr).Literal
+	case *ast.StringExpr:
+		str := expr.(*ast.StringExpr).Literal
 		return str, nil
 	case *ast.ConstExpr:
 		switch expr.(*ast.ConstExpr).Literal {
@@ -81,16 +81,16 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 		return (defineFunc(expr.(*ast.FuncExpr), env))
 	case *ast.CallExpr:
 		return (callFunc(expr.(*ast.CallExpr), env))
-	case ast.ParentExpr:
-		sub := expr.(ast.ParentExpr).SubExpr
+	case *ast.ParentExpr:
+		sub := expr.(*ast.ParentExpr).SubExpr
 		return evalExpr(sub, env)
-	case ast.UnaryExpr:
+	case *ast.UnaryExpr:
 		var val interface{}
 		var err error
-		if val, err = evalExpr(expr.(ast.UnaryExpr).Expr, env); err != nil {
+		if val, err = evalExpr(expr.(*ast.UnaryExpr).Expr, env); err != nil {
 			return nil, err
 		}
-		switch expr.(ast.UnaryExpr).Operator {
+		switch expr.(*ast.UnaryExpr).Operator {
 		case "+":
 			return val, nil
 		case "-":
@@ -102,13 +102,13 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 				return -1 * toFloat64(val), nil
 			}
 		}
-	case ast.BinOpExpr:
+	case *ast.BinOpExpr:
 		var left, right interface{}
 		var err error
-		if left, err = evalExpr(expr.(ast.BinOpExpr).Left, env); err != nil {
+		if left, err = evalExpr(expr.(*ast.BinOpExpr).Left, env); err != nil {
 			return nil, err
 		}
-		if right, err = evalExpr(expr.(ast.BinOpExpr).Right, env); err != nil {
+		if right, err = evalExpr(expr.(*ast.BinOpExpr).Right, env); err != nil {
 			return nil, err
 		}
 		/*
@@ -121,7 +121,7 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 				return left, nil
 			}
 		*/
-		switch expr.(ast.BinOpExpr).Operator {
+		switch expr.(*ast.BinOpExpr).Operator {
 		case "==":
 			return left == right, nil
 		case "!=":

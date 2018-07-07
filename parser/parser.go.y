@@ -63,11 +63,11 @@ stmt
     }
     | expr '=' expr
     {
-        $$ = ast.AssStmt{Left: $1, Right: $3}
+        $$ = &ast.AssStmt{Left: $1, Right: $3}
     }
     | expr
     {
-        $$ = ast.ExprStmt{Expr: $1}
+        $$ = &ast.ExprStmt{Expr: $1}
     }
 
 stmt_if
@@ -110,15 +110,15 @@ exprs
 expr
     : IDENT
     {
-        $$ = ast.IdentExpr{Literal: $1.Literal}
+        $$ = &ast.IdentExpr{Literal: $1.Literal}
     }
     | NUMBER
     {
-        $$ = ast.NumExpr{Literal: $1.Literal}
+        $$ = &ast.NumExpr{Literal: $1.Literal}
     }
     | STRING
     {
-        $$ = ast.StringExpr{Literal: $1.Literal}
+        $$ = &ast.StringExpr{Literal: $1.Literal}
     }
     | TRUE
     {
@@ -142,59 +142,59 @@ expr
     }
     | '+' expr %prec UNARY
     {
-        $$ = ast.UnaryExpr{Operator: "+", Expr:$2}
+        $$ = &ast.UnaryExpr{Operator: "+", Expr:$2}
     }
     | '-' expr %prec UNARY
     {
-        $$ = ast.UnaryExpr{Operator: "-", Expr:$2}
+        $$ = &ast.UnaryExpr{Operator: "-", Expr:$2}
     }
     | '(' expr ')'
     {
-        $$ = ast.ParentExpr{SubExpr: $2}
+        $$ = &ast.ParentExpr{SubExpr: $2}
     }
     | expr '+' expr
     {
-        $$ = ast.BinOpExpr{Left: $1, Operator: "+", Right: $3}
+        $$ = &ast.BinOpExpr{Left: $1, Operator: "+", Right: $3}
     }
     | expr '-' expr
     {
-        $$ = ast.BinOpExpr{Left: $1, Operator: "-", Right: $3}
+        $$ = &ast.BinOpExpr{Left: $1, Operator: "-", Right: $3}
     }
     | expr '*' expr
     {
-        $$ = ast.BinOpExpr{Left: $1, Operator: "*", Right: $3}
+        $$ = &ast.BinOpExpr{Left: $1, Operator: "*", Right: $3}
     }
     | expr '/' expr
     {
-        $$ = ast.BinOpExpr{Left: $1, Operator: "/", Right: $3}
+        $$ = &ast.BinOpExpr{Left: $1, Operator: "/", Right: $3}
     }
     | expr '%' expr
     {
-        $$ = ast.BinOpExpr{Left: $1, Operator: "%", Right: $3}
+        $$ = &ast.BinOpExpr{Left: $1, Operator: "%", Right: $3}
     }
     | expr EQEQ expr
     {
-        $$ = ast.BinOpExpr{Left: $1, Operator: "==", Right: $3}
+        $$ = &ast.BinOpExpr{Left: $1, Operator: "==", Right: $3}
     }
     | expr NEQ expr
     {
-        $$ = ast.BinOpExpr{Left: $1, Operator: "!=", Right: $3}
+        $$ = &ast.BinOpExpr{Left: $1, Operator: "!=", Right: $3}
     }
     | expr '>' expr
     {
-        $$ = ast.BinOpExpr{Left: $1, Operator: ">", Right: $3}
+        $$ = &ast.BinOpExpr{Left: $1, Operator: ">", Right: $3}
     }
     | expr '<' expr
     {
-        $$ = ast.BinOpExpr{Left: $1, Operator: "<", Right: $3}
+        $$ = &ast.BinOpExpr{Left: $1, Operator: "<", Right: $3}
     }
     | expr GE expr
     {
-        $$ = ast.BinOpExpr{Left: $1, Operator: ">=", Right: $3}
+        $$ = &ast.BinOpExpr{Left: $1, Operator: ">=", Right: $3}
     }
     | expr LE expr
     {
-        $$ = ast.BinOpExpr{Left: $1, Operator: "<=", Right: $3}
+        $$ = &ast.BinOpExpr{Left: $1, Operator: "<=", Right: $3}
     }
 
 ident_args

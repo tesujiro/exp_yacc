@@ -18,10 +18,10 @@ func Run(stmts []ast.Stmt, env *Env) (interface{}, error) {
 
 func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 	switch stmt.(type) {
-	case ast.AssStmt:
-		return evalAssExpr(stmt.(ast.AssStmt).Left, stmt.(ast.AssStmt).Right, env)
-	case ast.ExprStmt:
-		return evalExpr(stmt.(ast.ExprStmt).Expr, env)
+	case *ast.AssStmt:
+		return evalAssExpr(stmt.(*ast.AssStmt).Left, stmt.(*ast.AssStmt).Right, env)
+	case *ast.ExprStmt:
+		return evalExpr(stmt.(*ast.ExprStmt).Expr, env)
 	case *ast.IfStmt:
 		child := env.NewEnv()
 		defer child.Destroy()
@@ -92,8 +92,8 @@ func evalAssExpr(lexp ast.Expr, rexp ast.Expr, env *Env) (interface{}, error) {
 		return nil, nil
 	}
 	switch lexp.(type) {
-	case ast.IdentExpr:
-		id := lexp.(ast.IdentExpr).Literal
+	case *ast.IdentExpr:
+		id := lexp.(*ast.IdentExpr).Literal
 		if err := env.Set(id, rv); err != nil {
 			env.Define(id, rv)
 		}

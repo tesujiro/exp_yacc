@@ -576,11 +576,11 @@ yynewstate:
 		}
 	case 6:
 		{
-			yyVAL.stmt = ast.AssStmt{Left: yyS[yypt-2].expr, Right: yyS[yypt-0].expr}
+			yyVAL.stmt = &ast.AssStmt{Left: yyS[yypt-2].expr, Right: yyS[yypt-0].expr}
 		}
 	case 7:
 		{
-			yyVAL.stmt = ast.ExprStmt{Expr: yyS[yypt-0].expr}
+			yyVAL.stmt = &ast.ExprStmt{Expr: yyS[yypt-0].expr}
 		}
 	case 8:
 		{
@@ -617,15 +617,15 @@ yynewstate:
 		}
 	case 15:
 		{
-			yyVAL.expr = ast.IdentExpr{Literal: yyS[yypt-0].token.Literal}
+			yyVAL.expr = &ast.IdentExpr{Literal: yyS[yypt-0].token.Literal}
 		}
 	case 16:
 		{
-			yyVAL.expr = ast.NumExpr{Literal: yyS[yypt-0].token.Literal}
+			yyVAL.expr = &ast.NumExpr{Literal: yyS[yypt-0].token.Literal}
 		}
 	case 17:
 		{
-			yyVAL.expr = ast.StringExpr{Literal: yyS[yypt-0].token.Literal}
+			yyVAL.expr = &ast.StringExpr{Literal: yyS[yypt-0].token.Literal}
 		}
 	case 18:
 		{
@@ -649,59 +649,59 @@ yynewstate:
 		}
 	case 23:
 		{
-			yyVAL.expr = ast.UnaryExpr{Operator: "+", Expr: yyS[yypt-0].expr}
+			yyVAL.expr = &ast.UnaryExpr{Operator: "+", Expr: yyS[yypt-0].expr}
 		}
 	case 24:
 		{
-			yyVAL.expr = ast.UnaryExpr{Operator: "-", Expr: yyS[yypt-0].expr}
+			yyVAL.expr = &ast.UnaryExpr{Operator: "-", Expr: yyS[yypt-0].expr}
 		}
 	case 25:
 		{
-			yyVAL.expr = ast.ParentExpr{SubExpr: yyS[yypt-1].expr}
+			yyVAL.expr = &ast.ParentExpr{SubExpr: yyS[yypt-1].expr}
 		}
 	case 26:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "+", Right: yyS[yypt-0].expr}
+			yyVAL.expr = &ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "+", Right: yyS[yypt-0].expr}
 		}
 	case 27:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "-", Right: yyS[yypt-0].expr}
+			yyVAL.expr = &ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "-", Right: yyS[yypt-0].expr}
 		}
 	case 28:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "*", Right: yyS[yypt-0].expr}
+			yyVAL.expr = &ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "*", Right: yyS[yypt-0].expr}
 		}
 	case 29:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "/", Right: yyS[yypt-0].expr}
+			yyVAL.expr = &ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "/", Right: yyS[yypt-0].expr}
 		}
 	case 30:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "%", Right: yyS[yypt-0].expr}
+			yyVAL.expr = &ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "%", Right: yyS[yypt-0].expr}
 		}
 	case 31:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "==", Right: yyS[yypt-0].expr}
+			yyVAL.expr = &ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "==", Right: yyS[yypt-0].expr}
 		}
 	case 32:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "!=", Right: yyS[yypt-0].expr}
+			yyVAL.expr = &ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "!=", Right: yyS[yypt-0].expr}
 		}
 	case 33:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: ">", Right: yyS[yypt-0].expr}
+			yyVAL.expr = &ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: ">", Right: yyS[yypt-0].expr}
 		}
 	case 34:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "<", Right: yyS[yypt-0].expr}
+			yyVAL.expr = &ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "<", Right: yyS[yypt-0].expr}
 		}
 	case 35:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: ">=", Right: yyS[yypt-0].expr}
+			yyVAL.expr = &ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: ">=", Right: yyS[yypt-0].expr}
 		}
 	case 36:
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "<=", Right: yyS[yypt-0].expr}
+			yyVAL.expr = &ast.BinOpExpr{Left: yyS[yypt-2].expr, Operator: "<=", Right: yyS[yypt-0].expr}
 		}
 	case 37:
 		{
