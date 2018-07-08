@@ -60,6 +60,10 @@ func TestNumbers(t *testing.T) {
 		{script: "a=1;b=0.1;a>b", result: true},
 		{script: "a=1;b=0.1;c=15;(a+b)*c", result: float64(16.5)},
 		{script: "a=1;b=0.1;c=15;(a+b)*c/0.5", result: float64(33)},
+		// multi result
+		{script: "a,b=1,2;a", result: int64(1)},
+		{script: "a,b=1,2;b", result: int64(2)},
+		// if
 		{script: "a=1;if a==1 { a=2 }", result: int64(2)},
 		{script: "a=1;if a==1 { a=2 };a", result: int64(2)},
 		{script: "a=1;if a==1 { env_test=2 };env_test", errMessage: "unknown symbol 'env_test'"},
@@ -104,7 +108,10 @@ func TestFuncCall(t *testing.T) {
 		{script: "func Add(a1,a2){return a1+a2;};Add(1,5)", result: int64(6)},
 		{script: "func Add(a1,a2){return a1+a2;};Add(1.1,1.2)", result: float64(2.3)},
 		{script: "func Add(a1,a2){return a1+a2;};Add(\"hello,\",\"world!\")", result: "hello,world!"},
+		// multi result
 		{script: "func Cross(a1,a2){return a2,a1;};Cross(1,5)", result: []interface{}{int64(5), int64(1)}},
+		{script: "func Cross(a1,a2){return a2,a1;};x,y=Cross(1,5);x", result: int64(5)},
+		{script: "func Cross(a1,a2){return a2,a1;};x,y=Cross(1,5);y", result: int64(1)},
 		{script: "func Cross(a1,a2){return a2,a1;};Cross(\"a\",\"b\")", result: []interface{}{"b", "a"}},
 		{script: "a=1;func Fn(){a=100;};Fn();a", result: int64(100)},
 	}

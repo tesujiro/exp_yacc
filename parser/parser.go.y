@@ -65,6 +65,10 @@ stmt
     {
         $$ = &ast.AssStmt{Left: []ast.Expr{$1}, Right: []ast.Expr{$3}}
     }
+    | exprs '=' exprs
+    {
+        $$ = &ast.AssStmt{Left: $1, Right: $3}
+    }
     | expr
     {
         $$ = &ast.ExprStmt{Expr: $1}

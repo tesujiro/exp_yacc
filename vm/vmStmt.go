@@ -2,6 +2,7 @@ package vm
 
 import (
 	"errors"
+	"reflect"
 
 	"github.com/tesujiro/exp_yacc/ast"
 )
@@ -34,10 +35,35 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 			}
 		}
 
-		//
+		// evaluate assExpr
 		switch {
 		case len(left) == 1 && len(right) == 1:
 			return evalAssExpr(left[0], right_values[0], env)
+		case len(left) > 1 && len(right) == 1:
+			val := right_values[0]
+			if reflect.ValueOf(val).Kind() == reflect.Interface {
+				val = reflect.ValueOf(val).Elem().Interface()
+			}
+			if reflect.ValueOf(val).Kind() != reflect.Slice {
+				return nil, errors.New("single value assign to multi values")
+			} else {
+				elements := reflect.ValueOf(val)
+				right_values = make([]interface{}, elements.Len())
+				for i := 0; i < elements.Len(); i++ {
+					right_values[i] = elements.Index(i).Interface()
+				}
+			}
+			fallthrough
+		default:
+			for i, expr := range left {
+				if i >= len(right_values) {
+					break
+				}
+				if _, err := evalAssExpr(expr, right_values[i], env); err != nil {
+					return nil, err
+				}
+			}
+			return right_values[len(left)-1], nil
 		}
 	case *ast.ExprStmt:
 		return evalExpr(stmt.(*ast.ExprStmt).Expr, env)
