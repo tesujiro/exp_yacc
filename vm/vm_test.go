@@ -102,6 +102,7 @@ func TestFuncCall(t *testing.T) {
 	}{
 		//{script: "println(\"hello!\")", result: 7},
 		//{script: "println(\"hello!\")", result: []reflect.Value{reflect.ValueOf(7), reflect.ValueOf(error(nil))}},
+		{script: "a=10;a(10)", errMessage: "cannot call type int64"},
 		{script: "func Fn(a){3;};Fn(10)", result: int64(3)},
 		{script: "func Fn(a){a*10;};Fn(10)", result: int64(100)},
 		{script: "func Fn(a){a*10;};b=Fn(10);b*2", result: int64(200)},
@@ -129,7 +130,7 @@ func TestFuncCall(t *testing.T) {
 		}
 		if actual, err := Run(parseResult, env); err != nil {
 			if test.errMessage == "" || err.Error() != test.errMessage {
-				t.Errorf("Run error:%#v want%#v - script:%v\n", err, test.errMessage, test.script)
+				t.Errorf("got error message:%#v want%#v - script:%v\n", err.Error(), test.errMessage, test.script)
 			}
 			//} else if actual != test.result {
 			//} else if actual.(reflect.Value).Interface() != test.result.(reflect.Value).Interface() {

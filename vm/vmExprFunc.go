@@ -1,6 +1,7 @@
 package vm
 
 import (
+	"errors"
 	"reflect"
 
 	"github.com/tesujiro/exp_yacc/ast"
@@ -65,10 +66,19 @@ func callFunc(callExpr *ast.CallExpr, env *Env) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	f := fn.(reflect.Value) // interface{} ==> reflect.Value
-	if f.Kind() == reflect.Interface && !f.IsNil() {
-		f = f.Elem()
+	f, ok := fn.(reflect.Value) // interface{} ==> reflect.Value
+	if !ok {
+		return nil, errors.New("cannot call type " + reflect.TypeOf(fn).String())
 	}
+	debug.Println("func kind:", f.Kind())
+	if f.Kind() != reflect.Func {
+		return nil, errors.New("cannot call type " + f.Type().String())
+	}
+	/*
+		if f.Kind() == reflect.Interface && !f.IsNil() {
+			f = f.Elem()
+		}
+	*/
 	if args, err := callArgs(f, callExpr, env); err != nil {
 		return nil, err
 	} else {
