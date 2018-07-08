@@ -21,9 +21,21 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 	case *ast.AssStmt:
 		assStmt := stmt.(*ast.AssStmt)
 		left, right := assStmt.Left, assStmt.Right
+
+		// evaluate right expressions
+		right_values := make([]interface{}, len(right))
+		var err error
+		for i, expr := range right {
+			right_values[i], err = evalExpr(expr, env)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		//
 		switch {
 		case len(left) == 1 && len(right) == 1:
-			return evalAssExpr(left[0], right[0], env)
+			return evalAssExpr(left[0], right_values[0], env)
 		}
 	case *ast.ExprStmt:
 		return evalExpr(stmt.(*ast.ExprStmt).Expr, env)
@@ -87,24 +99,27 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 	return nil, nil
 }
 
-func evalAssExpr(lexp ast.Expr, rexp ast.Expr, env *Env) (interface{}, error) {
-	var rv interface{}
-	var err error
-	if rv, err = evalExpr(rexp, env); err != nil {
-		return nil, err
-	}
-	if rv == nil {
-		return nil, nil
-	}
+/*func evalAssExpr(lexp ast.Expr, rexp ast.Expr, env *Env) (interface{}, error) {
+var rv interface{}
+var err error
+if rv, err = evalExpr(rexp, env); err != nil {
+	return nil, err
+}
+if rv == nil {
+	return nil, nil
+}
+*/
+
+func evalAssExpr(lexp ast.Expr, val interface{}, env *Env) (interface{}, error) {
 	switch lexp.(type) {
 	case *ast.IdentExpr:
 		id := lexp.(*ast.IdentExpr).Literal
-		if err := env.Set(id, rv); err != nil {
-			env.Define(id, rv)
+		if err := env.Set(id, val); err != nil {
+			env.Define(id, val)
 		}
 	default:
 		// TODO:?
 		//return nil,fmt.Er
 	}
-	return rv, nil
+	return val, nil
 }
