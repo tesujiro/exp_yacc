@@ -79,8 +79,10 @@ func run() {
 		ast, parseError := parser.Parse(l)
 		debug.Printf("%#v\n", ast)
 		if parseError != nil {
+			debug.Println("[", parseError.Error(), "]")
+			//if parseError.Error() == "unexpected $end" || parseError.Error() == "comment not terminated" { //Does not work
 			if parseError.Error() == "unexpected $end" {
-				// caution: scanner.Scan() does not return "end of line" ,
+				// note: scanner.Scan() does not return "end of line" ,
 				// this is just for separating tokens
 				source += "\n"
 				//fmt.Println("source;[" + source + "]")
