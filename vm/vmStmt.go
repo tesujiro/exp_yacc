@@ -1,6 +1,8 @@
 package vm
 
 import (
+	"errors"
+
 	"github.com/tesujiro/exp_yacc/ast"
 )
 
@@ -119,7 +121,7 @@ func evalAssExpr(lexp ast.Expr, val interface{}, env *Env) (interface{}, error) 
 		}
 	default:
 		// TODO:?
-		//return nil,fmt.Er
+		return nil, errors.New("Invalid Operation")
 	}
 	return val, nil
 }
