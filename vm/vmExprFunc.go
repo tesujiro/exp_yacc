@@ -89,13 +89,27 @@ func callFunc(callExpr *ast.CallExpr, env *Env) (interface{}, error) {
 
 		debug.Println("refvals[0]: type ", reflect.TypeOf(refvals[0]), "\tValue ", reflect.ValueOf(refvals[0]))
 		debug.Println("refvals[0]: type ", reflect.TypeOf(refvals[0].Interface()), "\tValue ", reflect.ValueOf(refvals[0].Interface()))
-		// User Defined Funcion
-		result := refvals[0].Interface().(reflect.Value).Interface()
-		return result, nil
-		// TODO: Golang Pacakage Funcion
-		//
+		if isGoFunc(f.Type()) {
+			// Golang Pacakage Funcion
+			result := make([]interface{}, len(refvals))
+			for k, v := range refvals {
+				result[k] = v.Interface()
+			}
+			return result, nil
+		} else {
+			// User Defined Funcion
+			result := refvals[0].Interface().(reflect.Value).Interface()
+			return result, nil
+		}
 	}
 	return nil, nil
+}
+
+func isGoFunc(rt reflect.Type) bool {
+	if rt.NumOut() != 2 || rt.Out(0) != reflect.TypeOf(reflect.Value{}) || rt.Out(1) != reflect.TypeOf(reflect.Value{}) {
+		return true
+	}
+	return false
 }
 
 func callArgs(f reflect.Value, callExpr *ast.CallExpr, env *Env) ([]reflect.Value, error) {

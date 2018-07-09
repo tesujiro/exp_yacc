@@ -100,7 +100,7 @@ func TestFuncCall(t *testing.T) {
 		result     interface{}
 		errMessage string
 	}{
-		//{script: "println(\"hello!\")", result: 7},
+		{script: "ret,err=println(\"hello!\");ret", result: 7},
 		//{script: "println(\"hello!\")", result: []reflect.Value{reflect.ValueOf(7), reflect.ValueOf(error(nil))}},
 		{script: "a=10;a(10)", errMessage: "cannot call type int64"},
 		{script: "func Fn(a){3;};Fn(10)", result: int64(3)},
