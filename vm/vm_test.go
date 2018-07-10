@@ -109,6 +109,7 @@ func TestFuncCall(t *testing.T) {
 		{script: "func Add(a1,a2){return a1+a2;};Add(1,5)", result: int64(6)},
 		{script: "func Add(a1,a2){return a1+a2;};Add(1.1,1.2)", result: float64(2.3)},
 		{script: "func Add(a1,a2){return a1+a2;};Add(\"hello,\",\"world!\")", result: "hello,world!"},
+		{script: "func two(){1; return 2;3;};x=two();x", result: int64(2)},
 		// multi result
 		{script: "func Cross(a1,a2){return a2,a1;};Cross(1,5)", result: []interface{}{int64(5), int64(1)}},
 		{script: "func Cross(a1,a2){return a2,a1;};x,y=Cross(1,5);x", result: int64(5)},

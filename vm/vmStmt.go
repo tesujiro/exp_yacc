@@ -11,9 +11,18 @@ func Run(stmts []ast.Stmt, env *Env) (interface{}, error) {
 	var result interface{}
 	var err error
 	for _, stmt := range stmts {
-		result, err = runSingleStmt(stmt, env)
-		if err != nil {
-			return nil, err
+		switch stmt.(type) {
+		case *ast.ReturnStmt:
+			result, err = runSingleStmt(stmt, env)
+			if err != nil {
+				return nil, err
+			}
+			return result, err
+		default:
+			result, err = runSingleStmt(stmt, env)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 	return result, err
