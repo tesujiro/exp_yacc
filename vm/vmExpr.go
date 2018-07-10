@@ -9,19 +9,19 @@ import (
 	"github.com/tesujiro/exp_yacc/ast"
 )
 
-func toInt64(val interface{}) int64 {
+func toInt(val interface{}) int {
 	switch reflect.TypeOf(val).Kind() {
 	case reflect.Float64, reflect.Float32:
-		return int64(val.(float64))
+		return int(val.(float64))
 	}
-	i, _ := val.(int64)
+	i, _ := val.(int)
 	return i
 }
 
 func toFloat64(val interface{}) float64 {
 	switch reflect.TypeOf(val).Kind() {
 	case reflect.Int64, reflect.Int32, reflect.Int16, reflect.Int8, reflect.Int:
-		return float64(val.(int64))
+		return float64(val.(int))
 	}
 	f, _ := val.(float64)
 	return f
@@ -60,10 +60,11 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 				return f, nil
 			}
 		}
-		if i, err := strconv.ParseInt(lit, 10, 64); err != nil {
+		//if i, err := strconv.ParseInt(lit, 10, 64); err != nil {
+		if i, err := strconv.ParseInt(lit, 10, 0); err != nil {
 			return 0, err
 		} else {
-			return i, nil
+			return int(i), nil
 		}
 	case *ast.StringExpr:
 		str := expr.(*ast.StringExpr).Literal
@@ -97,7 +98,7 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 			kind := reflect.TypeOf(val).Kind()
 			switch kind {
 			case reflect.Int64, reflect.Int32, reflect.Int16, reflect.Int8, reflect.Int:
-				return -1 * toInt64(val), nil
+				return -1 * toInt(val), nil
 			case reflect.Float64, reflect.Float32:
 				return -1 * toFloat64(val), nil
 			}
@@ -142,8 +143,9 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 			switch {
 			case l_kind == reflect.String || r_kind == reflect.String:
 				return toString(left) + toString(right), nil
-			case l_kind == reflect.Int64 && r_kind == reflect.Int64:
-				return toInt64(left) + toInt64(right), nil
+			//case l_kind == reflect.Int64 && r_kind == reflect.Int64:
+			case l_kind == reflect.Int && r_kind == reflect.Int:
+				return toInt(left) + toInt(right), nil
 			default:
 				return toFloat64(left) + toFloat64(right), nil
 			}
@@ -151,8 +153,8 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 			l_kind := reflect.TypeOf(left).Kind()
 			r_kind := reflect.TypeOf(right).Kind()
 			switch {
-			case l_kind == reflect.Int64 && r_kind == reflect.Int64:
-				return toInt64(left) - toInt64(right), nil
+			case l_kind == reflect.Int && r_kind == reflect.Int:
+				return toInt(left) - toInt(right), nil
 			default:
 				return toFloat64(left) - toFloat64(right), nil
 			}
@@ -160,25 +162,25 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 			l_kind := reflect.TypeOf(left).Kind()
 			r_kind := reflect.TypeOf(right).Kind()
 			switch {
-			case l_kind == reflect.Int64 && r_kind == reflect.Int64:
-				return toInt64(left) * toInt64(right), nil
+			case l_kind == reflect.Int && r_kind == reflect.Int:
+				return toInt(left) * toInt(right), nil
 			default:
 				return toFloat64(left) * toFloat64(right), nil
 			}
 		case "/":
 			l_kind := reflect.TypeOf(left).Kind()
 			r_kind := reflect.TypeOf(right).Kind()
-			if right == int64(0) {
+			if right == 0 {
 				return nil, fmt.Errorf("devision by zero")
 			}
 			switch {
-			case l_kind == reflect.Int64 && r_kind == reflect.Int64:
-				return toInt64(left) / toInt64(right), nil
+			case l_kind == reflect.Int && r_kind == reflect.Int:
+				return toInt(left) / toInt(right), nil
 			default:
 				return toFloat64(left) / toFloat64(right), nil
 			}
 		case "%":
-			return toInt64(left) % toInt64(right), nil
+			return toInt(left) % toInt(right), nil
 		}
 	}
 	return 0, nil
