@@ -2,6 +2,7 @@ package vm
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 
 	"github.com/tesujiro/exp_yacc/ast"
@@ -106,6 +107,12 @@ func callFunc(callExpr *ast.CallExpr, env *Env) (interface{}, error) {
 		return nil, err
 	} else {
 		debug.Printf("args: %#v\n", args)
+		/*
+			fmt.Printf("=====>args: %v\n", args)
+			for i, arg := range args {
+				fmt.Printf("=====>===>arg[%d]: %v\n", i, arg)
+			}
+		*/
 
 		// Call Function
 		refvals := f.Call(args)
@@ -139,12 +146,12 @@ func callArgs(f reflect.Value, callExpr *ast.CallExpr, env *Env) ([]reflect.Valu
 	//if f.Type().IsVariadic() {
 	//return nil, errors.New("sorry! TODO:Variadic")
 	//}
-	//fmt.Printf("function args should be:%d received:%d\n", f.Type().NumIn(), len(callExpr.SubExprs))
 	if f.Type().NumIn() < 1 {
 		return []reflect.Value{}, nil
 	}
-	// TODO: check args length
-	//
+	if f.Type().NumIn() != len(callExpr.SubExprs) {
+		return []reflect.Value{}, fmt.Errorf("function wants %v arguments but received %v", f.Type().NumIn(), len(callExpr.SubExprs))
+	}
 	args := make([]reflect.Value, f.Type().NumIn(), f.Type().NumIn())
 	for k, subExpr := range callExpr.SubExprs {
 		if arg, err := evalExpr(subExpr, env); err != nil {

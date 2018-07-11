@@ -118,8 +118,10 @@ func TestFuncCall(t *testing.T) {
 		{script: "a=1;func Fn(){a=100;};Fn();a", result: 100},
 		// anonymous func
 		{script: "func (x){return x+100;}(10)", result: 110},
+		{script: "func (x){return x+100;}()", errMessage: "function wants 1 arguments but received 0"},
 		{script: "(1+1)(10)", errMessage: "cannot call type int"},
-		//{script: "func (x){return func(x) {return x+100};}()(23)", result: 123}, //TODO: buggy
+		//{script: "Fn=func (x){return func(y) {return x*10+y};};Fn2=Fn(10);", result: 102}, //TODO: buggy
+		//{script: "func (x){return func(y) {return x*10+y};}(10)(2)", result: 102}, //TODO: buggy
 	}
 	for _, test := range tests {
 		env := NewEnv()
