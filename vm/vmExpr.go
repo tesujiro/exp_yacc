@@ -82,6 +82,8 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 		return (defineFunc(expr.(*ast.FuncExpr), env))
 	case *ast.CallExpr:
 		return (callFunc(expr.(*ast.CallExpr), env))
+	case *ast.AnonymousCallExpr:
+		return (callAnonymousFunc(expr.(*ast.AnonymousCallExpr), env))
 	case *ast.ParentExpr:
 		sub := expr.(*ast.ParentExpr).SubExpr
 		return evalExpr(sub, env)

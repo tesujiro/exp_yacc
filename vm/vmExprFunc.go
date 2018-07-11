@@ -61,14 +61,37 @@ func defineFunc(funcExpr *ast.FuncExpr, env *Env) (interface{}, error) {
 	return fn, nil
 }
 
-func callFunc(callExpr *ast.CallExpr, env *Env) (interface{}, error) {
-	fn, err := env.Get(callExpr.Name) // fn: interface{}
-	if err != nil {
+func callAnonymousFunc(anonymousCallExpr *ast.AnonymousCallExpr, env *Env) (interface{}, error) {
+	ace := anonymousCallExpr
+	debug.Printf("anonCallExpr:%#v\n", ace)
+	if result, err := evalExpr(ace.Expr, env); err != nil {
 		return nil, err
+	} else {
+		if rv, ok := result.(reflect.Value); !ok {
+			return nil, errors.New("cannot call type " + reflect.TypeOf(result).String())
+		} else {
+			if rv.Type().Kind() != reflect.Func {
+				return nil, errors.New("cannot call type " + reflect.TypeOf(result).String())
+			}
+			return callFunc(&ast.CallExpr{Func: rv, SubExprs: ace.SubExprs}, env)
+		}
 	}
-	f, ok := fn.(reflect.Value) // interface{} ==> reflect.Value
-	if !ok {
-		return nil, errors.New("cannot call type " + reflect.TypeOf(fn).String())
+}
+
+func callFunc(callExpr *ast.CallExpr, env *Env) (interface{}, error) {
+	var f reflect.Value
+	if callExpr.Name != "" {
+		fn, err := env.Get(callExpr.Name) // fn: interface{}
+		if err != nil {
+			return nil, err
+		}
+		var ok bool
+		f, ok = fn.(reflect.Value) // interface{} ==> reflect.Value
+		if !ok {
+			return nil, errors.New("cannot call type " + reflect.TypeOf(fn).String())
+		}
+	} else {
+		f = callExpr.Func
 	}
 	debug.Println("func kind:", f.Kind())
 	if f.Kind() != reflect.Func {

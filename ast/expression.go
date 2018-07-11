@@ -1,5 +1,7 @@
 package ast
 
+import "reflect"
+
 type Expr interface{}
 
 type IdentExpr struct {
@@ -41,5 +43,11 @@ type FuncExpr struct {
 
 type CallExpr struct {
 	Name     string
+	Func     reflect.Value
+	SubExprs []Expr
+}
+
+type AnonymousCallExpr struct {
+	Expr     Expr
 	SubExprs []Expr
 }

@@ -144,6 +144,15 @@ expr
     {
     	$$ = &ast.FuncExpr{Name: $2.Literal, Args: $4, Stmts: $7}
     }
+    /* conflict shift */
+    | expr '(' exprs ')'
+    {
+        $$ = &ast.AnonymousCallExpr{Expr: $1, SubExprs:$3}
+    }
+    | FUNC '(' ident_args ')''{' program '}'
+    {
+        $$ = &ast.FuncExpr{Args: $3, Stmts: $6}
+    }
     | '+' expr %prec UNARY
     {
         $$ = &ast.UnaryExpr{Operator: "+", Expr:$2}

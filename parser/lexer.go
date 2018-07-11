@@ -5,7 +5,6 @@ import (
 	"text/scanner"
 
 	"github.com/tesujiro/exp_yacc/ast"
-	"github.com/tesujiro/exp_yacc/debug"
 )
 
 type Lexer struct {
@@ -28,7 +27,7 @@ var opName = map[string]int{
 }
 
 func (l *Lexer) getToken() int {
-	debug.Println("getToken:start")
+	//debug.Println("getToken:start")
 	if len(l.buffer) > 0 {
 		// pop
 		token := l.buffer[0]

@@ -97,8 +97,10 @@ func TestFuncCall(t *testing.T) {
 		result     interface{}
 		errMessage string
 	}{
+		// Go Func
 		{script: "ret,err=println(\"hello!\");ret", result: 7},
 		//{script: "println(\"hello!\")", result: []reflect.Value{reflect.ValueOf(7), reflect.ValueOf(error(nil))}},
+		// User Defined Func
 		{script: "a=10;a(10)", errMessage: "cannot call type int"},
 		{script: "func Fn(a){3;};Fn(10)", result: 3},
 		{script: "func Fn(a){a*10;};Fn(10)", result: 100},
@@ -107,12 +109,17 @@ func TestFuncCall(t *testing.T) {
 		{script: "func Add(a1,a2){return a1+a2;};Add(1.1,1.2)", result: float64(2.3)},
 		{script: "func Add(a1,a2){return a1+a2;};Add(\"hello,\",\"world!\")", result: "hello,world!"},
 		{script: "func two(){1; return 2;3;};x=two();x", result: 2},
+		{script: "Hundred=func Fn(){return 100;};a=Hundred();a", result: 100},
 		// multi result
 		{script: "func Cross(a1,a2){return a2,a1;};Cross(1,5)", result: []interface{}{5, 1}},
 		{script: "func Cross(a1,a2){return a2,a1;};x,y=Cross(1,5);x", result: 5},
 		{script: "func Cross(a1,a2){return a2,a1;};x,y=Cross(1,5);y", result: 1},
 		{script: "func Cross(a1,a2){return a2,a1;};Cross(\"a\",\"b\")", result: []interface{}{"b", "a"}},
 		{script: "a=1;func Fn(){a=100;};Fn();a", result: 100},
+		// anonymous func
+		{script: "func (x){return x+100;}(10)", result: 110},
+		{script: "(1+1)(10)", errMessage: "cannot call type int"},
+		//{script: "func (x){return func(x) {return x+100};}()(23)", result: 123}, //TODO: buggy
 	}
 	for _, test := range tests {
 		env := NewEnv()
@@ -123,7 +130,7 @@ func TestFuncCall(t *testing.T) {
 		l.Init(strings.NewReader(test.script))
 		parseResult, err := parser.Parse(l)
 		if err != nil {
-			fmt.Printf("Syntax error: %v \n", err)
+			t.Errorf("Syntax error: %v - script:%v\n", err, test.script)
 			continue
 		}
 		if actual, err := Run(parseResult, env); err != nil {
