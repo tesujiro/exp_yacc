@@ -24,19 +24,20 @@ func defineFunc(funcExpr *ast.FuncExpr, env *Env) (interface{}, error) {
 	//runVmFunction := func(in []interface{}) (interface{}, error) {
 	runVmFunction := func(in []reflect.Value) []reflect.Value {
 		newEnv := env.NewEnv()
-		defer newEnv.Destroy()
+		//defer newEnv.Destroy()  // Do not delete this line because higer order function
 
 		for i, arg := range funcExpr.Args {
 			//val := reflect.ValueOf(in[i]).Interface()
 			//val := reflect.ValueOf(in[i]).Interface().(reflect.Value).Interface()
 			val := reflect.ValueOf(in[i]).Interface().(reflect.Value).Interface().(reflect.Value).Interface()
 			debug.Printf("arg[%v]: %#v\tType:%v\tValue:%v\n", i, in[i], reflect.TypeOf(val), reflect.ValueOf(val))
-			if err := newEnv.Set(arg, val); err != nil {
-				if err := newEnv.Define(arg, val); err != nil {
-					return []reflect.Value{reflect.ValueOf(interface{}(nil)), reflect.ValueOf(err)}
-				}
+			//if err := newEnv.Set(arg, val); err != nil {
+			if err := newEnv.Define(arg, val); err != nil {
+				return []reflect.Value{reflect.ValueOf(interface{}(nil)), reflect.ValueOf(err)} // TODO:buggy
 			}
+			//}
 		}
+		debug.Printf("Env: %#v\n", *env)
 		debug.Printf("newEnv: %#v\n", *newEnv)
 
 		var errValue reflect.Value
@@ -46,6 +47,7 @@ func defineFunc(funcExpr *ast.FuncExpr, env *Env) (interface{}, error) {
 
 		if rv, err := Run(funcExpr.Stmts, newEnv); err != nil {
 			// TODO: maybe buggy
+			fmt.Println("ERROR IN DEFINE FUNCTION!!!", err)
 			return []reflect.Value{reflect.ValueOf(interface{}(nil)), reflect.ValueOf(err)} //TODO
 		} else {
 			return []reflect.Value{reflect.ValueOf(reflect.ValueOf(rv)), reflect.ValueOf(errValue)}
@@ -74,7 +76,8 @@ func callAnonymousFunc(anonymousCallExpr *ast.AnonymousCallExpr, env *Env) (inte
 			if rv.Type().Kind() != reflect.Func {
 				return nil, errors.New("cannot call type " + reflect.TypeOf(result).String())
 			}
-			return callFunc(&ast.CallExpr{Func: rv, SubExprs: ace.SubExprs}, env)
+			//return callFunc(&ast.CallExpr{Func: rv, SubExprs: ace.SubExprs}, env)
+			return evalExpr(&ast.CallExpr{Func: rv, SubExprs: ace.SubExprs}, env)
 		}
 	}
 }
@@ -94,43 +97,25 @@ func callFunc(callExpr *ast.CallExpr, env *Env) (interface{}, error) {
 	} else {
 		f = callExpr.Func
 	}
-	debug.Println("func kind:", f.Kind())
+	//debug.Println("func kind:", f.Kind())
 	if f.Kind() != reflect.Func {
 		return nil, errors.New("cannot call type " + f.Type().String())
 	}
-	/*
-		if f.Kind() == reflect.Interface && !f.IsNil() {
-			f = f.Elem()
-		}
-	*/
+	if f.Kind() == reflect.Interface && !f.IsNil() {
+		f = f.Elem()
+	}
 	if args, err := callArgs(f, callExpr, env); err != nil {
 		return nil, err
 	} else {
-		debug.Printf("args: %#v\n", args)
-		/*
-			fmt.Printf("=====>args: %v\n", args)
-			for i, arg := range args {
-				fmt.Printf("=====>===>arg[%d]: %v\n", i, arg)
-			}
-		*/
+		debug.Printf("args: %v\n", args)
+		for i, arg := range args {
+			debug.Printf("=>arg[%d]: %v\n", i, arg.Interface())
+		}
 
 		// Call Function
 		refvals := f.Call(args)
 
-		debug.Println("refvals[0]: type ", reflect.TypeOf(refvals[0]), "\tValue ", reflect.ValueOf(refvals[0]))
-		debug.Println("refvals[0]: type ", reflect.TypeOf(refvals[0].Interface()), "\tValue ", reflect.ValueOf(refvals[0].Interface()))
-		if isGoFunc(f.Type()) {
-			// Golang Pacakage Funcion
-			result := make([]interface{}, len(refvals))
-			for k, v := range refvals {
-				result[k] = v.Interface()
-			}
-			return result, nil
-		} else {
-			// User Defined Funcion
-			result := refvals[0].Interface().(reflect.Value).Interface()
-			return result, nil
-		}
+		return makeResult(refvals, isGoFunc(f.Type()))
 	}
 	return nil, nil
 }
@@ -164,4 +149,51 @@ func callArgs(f reflect.Value, callExpr *ast.CallExpr, env *Env) ([]reflect.Valu
 		}
 	}
 	return args, nil
+}
+
+func makeResult(ret []reflect.Value, isGoFunction bool) (interface{}, error) {
+	debug.Println("ret length:", len(ret))
+	for i, _ := range ret {
+		a := ret[i]
+		debug.Printf("ret[%d]           : \tType:%v\tValue:%v\tKind():%v\n", i, reflect.TypeOf(a), reflect.ValueOf(a), reflect.ValueOf(a).Kind())
+		b := a.Interface()
+		debug.Printf("->Interface()    : \tType:%v\tValue:%v\tKind():%v\n", reflect.TypeOf(b), reflect.ValueOf(b), reflect.ValueOf(b).Kind())
+		if c, ok := b.(reflect.Value); ok {
+			d := c.Interface()
+			debug.Printf("->(reflect.Value)    : \tType:%v\tValue:%v\tKind():%v\n", reflect.TypeOf(d), reflect.ValueOf(d), reflect.ValueOf(d).Kind())
+		}
+	}
+	if isGoFunction {
+		debug.Println("Go Function")
+		// Golang Pacakage Funcion
+		result := make([]interface{}, len(ret))
+		for k, v := range ret {
+			result[k] = v.Interface()
+		}
+		return result, nil
+	}
+
+	debug.Println("User Defined Function")
+	if len(ret) != 2 {
+		return nil, fmt.Errorf("User defined function did not return 2 values but returned %v values", len(ret))
+	}
+	if !ret[0].IsValid() {
+		return nil, fmt.Errorf("User defined function value 1 did not return reflect value type but returned invalid type")
+	}
+	if !ret[1].IsValid() {
+		return nil, fmt.Errorf("User defined function value 2 did not return reflect value type but returned invalid type")
+	}
+	if ret[0].Type() != reflect.TypeOf(reflect.Value{}) {
+		return nil, fmt.Errorf("User defined function value 1 did not return reflect value type but returned %v type", ret[0].Type().String())
+	}
+	if ret[1].Type() != reflect.TypeOf(reflect.Value{}) {
+		return nil, fmt.Errorf("User defined function value 2 did not return reflect value type but returned %v type", ret[1].Type().String())
+	}
+	// User Defined Funcion
+	//result := ret[0].Interface().(reflect.Value)
+	result := ret[0].Interface().(reflect.Value).Interface()
+	//result := ret[0].Interface().(reflect.Value).Interface().(reflect.Value)
+	//TODO: ERROR CASE
+
+	return result, nil
 }

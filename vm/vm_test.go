@@ -120,14 +120,17 @@ func TestFuncCall(t *testing.T) {
 		{script: "func (x){return x+100;}(10)", result: 110},
 		{script: "func (x){return x+100;}()", errMessage: "function wants 1 arguments but received 0"},
 		{script: "(1+1)(10)", errMessage: "cannot call type int"},
-		//{script: "Fn=func (x){return func(y) {return x*10+y};};Fn2=Fn(10);", result: 102}, //TODO: buggy
-		//{script: "func (x){return func(y) {return x*10+y};}(10)(2)", result: 102}, //TODO: buggy
+		{script: "Fn=func (x){return func(y) {return x*10+y};};Fn2=Fn(10);Fn2(2)", result: 102}, //TODO: buggy
+		{script: "func (x){return func(y) {return x*10+y};}()(2)", errMessage: "function wants 1 arguments but received 0"},
+		{script: "func (x){return func(y) {return x*10+y};}(10)()", errMessage: "function wants 1 arguments but received 0"},
+		{script: "func (x){return func(y) {return x*10+y};}(10)(2)", result: 102},
 	}
 	for _, test := range tests {
 		env := NewEnv()
 		env.Define("println", reflect.ValueOf(fmt.Println))
 		env.Define("printf", reflect.ValueOf(fmt.Printf))
 
+		//fmt.Println("*************************\nTEST SCRIPT:", test.script)
 		l := new(parser.Lexer)
 		l.Init(strings.NewReader(test.script))
 		parseResult, err := parser.Parse(l)
