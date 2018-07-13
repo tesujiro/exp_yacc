@@ -2,17 +2,16 @@ package parser
 
 import (
 	"errors"
-	"text/scanner"
+	"go/scanner"
+	"go/token"
 
 	"github.com/tesujiro/exp_yacc/ast"
 )
 
 type Lexer struct {
 	scanner.Scanner
-	result  []ast.Stmt
-	err     error
-	buffer  []int
-	curLine int
+	result []ast.Stmt
+	err    error
 }
 
 // opName is a correction of operation names.
@@ -26,80 +25,46 @@ var opName = map[string]int{
 	"return": RETURN,
 }
 
-func (l *Lexer) getToken() int {
-	//debug.Println("getToken:start")
-	if len(l.buffer) > 0 {
-		// pop
-		token := l.buffer[0]
-		l.buffer = l.buffer[1:]
-		return token
+func (l *Lexer) Lex(lval *yySymType) (token_id int) {
+	//TODO: Position
+	_, tok, lit := l.Scan()
+	if name, ok := opName[lit]; ok {
+		token_id = name
+		lval.token = ast.Token{Token: token_id, Literal: lit}
+		//fmt.Printf("tok=%v\ttoken=%#v\n", tok.String(), lval.token)
+		return token_id
 	}
-	token := int(l.Scan())
-	if l.Position.Line > l.curLine {
-		// Add '\n' to buffer
-		for ; l.Position.Line > l.curLine; l.curLine++ {
-			// push '\n' * n
-			l.buffer = append(l.buffer, int('\n'))
-		}
-		// push token
-		l.buffer = append(l.buffer, int(token))
-		l.curLine = l.Position.Line
-		return l.getToken()
-	}
-	l.curLine = l.Position.Line
-	return token
-}
-
-func (l *Lexer) Lex(lval *yySymType) int {
-	//token := int(l.Scan())
-	token := l.getToken()
-	switch token {
-	case scanner.Ident:
-		if name, ok := opName[l.TokenText()]; ok {
-			token = name
-		} else {
-			token = IDENT
-		}
-	case scanner.Int:
-		token = NUMBER
-	case scanner.Float:
-		token = NUMBER
-	case scanner.String:
-		token = STRING
-		lit := l.TokenText()
+	switch tok {
+	case token.IDENT:
+		token_id = IDENT
+	case token.INT:
+		token_id = NUMBER
+	case token.FLOAT:
+		token_id = NUMBER
+	case token.STRING:
+		token_id = STRING
 		if len(lit) > 1 {
 			lit = lit[1 : len(lit)-1]
 		}
-		lval.token = ast.Token{Token: token, Literal: lit}
-		return token
-	case int('='):
-		switch l.Peek() {
-		case '=':
-			token = EQEQ
-			l.Next()
-		}
-	case int('!'):
-		switch l.Peek() {
-		case '=':
-			token = NEQ
-			l.Next()
-		}
-	case int('>'):
-		switch l.Peek() {
-		case '=':
-			token = GE
-			l.Next()
-		}
-	case int('<'):
-		switch l.Peek() {
-		case '=':
-			token = LE
-			l.Next()
+	default:
+		switch tok.String() {
+		case "==":
+			token_id = EQEQ
+		case "!=":
+			token_id = NEQ
+		case ">=":
+			token_id = GE
+		case "<=":
+			token_id = LE
+		default:
+			if len(tok.String()) == 1 {
+				token_id = int(tok.String()[0])
+			}
 		}
 	}
-	lval.token = ast.Token{Token: token, Literal: l.TokenText()}
-	//fmt.Printf("token=%#v\n", lval.token)
-	return token
+	lval.token = ast.Token{Token: token_id, Literal: lit}
+	//fmt.Printf("tok=%v\ttoken=%#v\n", tok.String(), lval.token)
+	return token_id
 }
 
 func (l *Lexer) Error(e string) {

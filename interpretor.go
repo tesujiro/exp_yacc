@@ -4,10 +4,11 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"go/token"
 	"io/ioutil"
 	"os"
-	"strings"
 
+	"github.com/rogpeppe/godef/go/scanner"
 	"github.com/tesujiro/exp_yacc/debug"
 	"github.com/tesujiro/exp_yacc/parser"
 	"github.com/tesujiro/exp_yacc/vm"
@@ -42,7 +43,12 @@ func runScriptFile(file string) {
 	env := vm.NewEnv()
 
 	l := new(parser.Lexer)
-	l.Init(strings.NewReader(source))
+	//l.Init(strings.NewReader(source))
+
+	fset := token.NewFileSet()                      // positions are relative to fset
+	f := fset.AddFile("", fset.Base(), len(source)) // register input "file"
+	l.Init(f, []byte(source), nil /* no error handler */, scanner.ScanComments)
+
 	ast, parseError := parser.Parse(l)
 	debug.Printf("%#v\n", ast)
 	if parseError != nil {
@@ -75,7 +81,12 @@ func run() {
 		}
 
 		l := new(parser.Lexer)
-		l.Init(strings.NewReader(source))
+		//l.Init(strings.NewReader(source))
+
+		fset := token.NewFileSet()                         // positions are relative to fset
+		file := fset.AddFile("", fset.Base(), len(source)) // register input "file"
+		l.Init(file, []byte(source), nil /* no error handler */, scanner.ScanComments)
+
 		ast, parseError := parser.Parse(l)
 		debug.Printf("%#v\n", ast)
 		if parseError != nil {

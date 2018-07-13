@@ -2,10 +2,11 @@ package vm
 
 import (
 	"fmt"
+	"go/token"
 	"reflect"
-	"strings"
 	"testing"
 
+	"github.com/rogpeppe/godef/go/scanner"
 	"github.com/tesujiro/exp_yacc/parser"
 )
 
@@ -75,22 +76,35 @@ func TestNumbers(t *testing.T) {
 		{script: "a=3;if a==1 { env_test=11 } else if a==2 { env_test=12 } else { env_test=13 };env_test", errMessage: "unknown symbol 'env_test'"},
 		{script: "a=1;if a==1 { a=2\n a=3 }", result: 3},
 		{script: "a=1;if a==1 { a=2\n a=3\n }", result: 3},
+		{script: "a=1;if a==1 {\n a=2\n a=3\n }", result: 3},
+		{script: "a=1;if a==1 \n{\n a=2\n a=3\n }", errMessage: "unexpected ';'"},
 	}
 	for _, test := range tests {
 		env := NewEnv()
 		l := new(parser.Lexer)
-		l.Init(strings.NewReader(test.script))
-		parseResult, _ := parser.Parse(l)
-		if actual, err := Run(parseResult, env); err != nil {
+
+		fset := token.NewFileSet()                              // positions are relative to fset
+		file := fset.AddFile("", fset.Base(), len(test.script)) // register input "file"
+		l.Init(file, []byte(test.script), nil /* no error handler */, scanner.ScanComments)
+
+		if parseResult, err := parser.Parse(l); err != nil {
 			if test.errMessage == "" || err.Error() != test.errMessage {
 				t.Errorf("Run error:%#v want%#v - script:%v\n", err, test.errMessage, test.script)
 			}
-		} else if actual != test.result {
-			t.Errorf("got %#v\nwant %#v - script: %v", actual, test.result, test.script)
-			continue
+		} else {
+			//fmt.Println("src:", test.script, "\tast:", *parseResult[0])
+			if actual, err := Run(parseResult, env); err != nil {
+				if test.errMessage == "" || err.Error() != test.errMessage {
+					t.Errorf("Run error:%#v want%#v - script:%v\n", err, test.errMessage, test.script)
+				}
+			} else if actual != test.result {
+				t.Errorf("got %#v\nwant %#v - script: %v", actual, test.result, test.script)
+				continue
+			}
 		}
 	}
 }
+
 func TestFuncCall(t *testing.T) {
 	tests := []struct {
 		script     string
@@ -133,12 +147,18 @@ func TestFuncCall(t *testing.T) {
 		env.Define("println", reflect.ValueOf(fmt.Println))
 		env.Define("printf", reflect.ValueOf(fmt.Printf))
 
-		fmt.Println("*************************\nTEST SCRIPT:", test.script)
+		//fmt.Println("*************************\nTEST SCRIPT:", test.script)
 		l := new(parser.Lexer)
-		l.Init(strings.NewReader(test.script))
+
+		fset := token.NewFileSet()                              // positions are relative to fset
+		file := fset.AddFile("", fset.Base(), len(test.script)) // register input "file"
+		l.Init(file, []byte(test.script), nil /* no error handler */, scanner.ScanComments)
+
 		parseResult, err := parser.Parse(l)
 		if err != nil {
-			t.Errorf("Syntax error: %v - script:%v\n", err, test.script)
+			if test.errMessage == "" || err.Error() != test.errMessage {
+				t.Errorf("got error message:%#v want%#v - script:%v\n", err.Error(), test.errMessage, test.script)
+			}
 			continue
 		}
 		if actual, err := Run(parseResult, env); err != nil {
