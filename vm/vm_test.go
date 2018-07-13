@@ -124,13 +124,15 @@ func TestFuncCall(t *testing.T) {
 		{script: "func (x){return func(y) {return x*10+y};}()(2)", errMessage: "function wants 1 arguments but received 0"},
 		{script: "func (x){return func(y) {return x*10+y};}(10)()", errMessage: "function wants 1 arguments but received 0"},
 		{script: "func (x){return func(y) {return x*10+y};}(10)(2)", result: 102},
+		//{script: "func (x){return x+z}(10)(2)", result: 102},
+		//{script: "func (x){return func(y) {return x*10+y+z};}(10)(2)", result: 102},
 	}
 	for _, test := range tests {
 		env := NewEnv()
 		env.Define("println", reflect.ValueOf(fmt.Println))
 		env.Define("printf", reflect.ValueOf(fmt.Printf))
 
-		//fmt.Println("*************************\nTEST SCRIPT:", test.script)
+		fmt.Println("*************************\nTEST SCRIPT:", test.script)
 		l := new(parser.Lexer)
 		l.Init(strings.NewReader(test.script))
 		parseResult, err := parser.Parse(l)
