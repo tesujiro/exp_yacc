@@ -124,8 +124,9 @@ func TestFuncCall(t *testing.T) {
 		{script: "func (x){return func(y) {return x*10+y};}()(2)", errMessage: "function wants 1 arguments but received 0"},
 		{script: "func (x){return func(y) {return x*10+y};}(10)()", errMessage: "function wants 1 arguments but received 0"},
 		{script: "func (x){return func(y) {return x*10+y};}(10)(2)", result: 102},
-		//{script: "func (x){return x+z}(10)(2)", result: 102},
-		//{script: "func (x){return func(y) {return x*10+y+z};}(10)(2)", result: 102},
+		// error while execute function
+		{script: "func (x){return x+z}(10)", errMessage: "unknown symbol 'z'"},
+		{script: "func (x){return func(y) {return x*10+y+z};}(10)(2)", errMessage: "unknown symbol 'z'"},
 	}
 	for _, test := range tests {
 		env := NewEnv()

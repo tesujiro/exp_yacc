@@ -41,38 +41,16 @@ func defineFunc(funcExpr *ast.FuncExpr, env *Env) (interface{}, error) {
 		debug.Printf("newEnv: %#v\n", *newEnv)
 
 		if rv, err := Run(funcExpr.Stmts, newEnv); err != nil {
-			// TODO: maybe buggy
-			fmt.Println("ERROR IN DEFINE FUNCTION!!!", err)
-			//fmt.Println("\tType:\t", reflect.TypeOf(err))
-			//fmt.Println("\tValue:\t", reflect.ValueOf(err))
 			errv := reflect.ValueOf(reflect.ValueOf(&err).Elem())
-			fmt.Println("errv:\t", errv)
-			fmt.Println("errv.Type:\t", errv.Type())
-			fmt.Println("errv.Int():\t", errv.Interface())
-			fmt.Println("TypeOf(errv.Int()):\t", reflect.TypeOf(errv.Interface()))
+			debug.Println("errv:\t", errv)
+			debug.Println("errv.Type:\t", errv.Type())
+			debug.Println("errv.Int():\t", errv.Interface())
+			debug.Println("TypeOf(errv.Int()):\t", reflect.TypeOf(errv.Interface()))
 			nilValue := reflect.New(reflect.TypeOf((*interface{})(nil)).Elem()).Elem()
 			return []reflect.Value{reflect.ValueOf(reflect.ValueOf(nilValue)), reflect.ValueOf(errv)}
-			//return []reflect.Value{reflect.ValueOf(reflect.ValueOf(nilValue)), reflect.ValueOf(reflect.ValueOf(errv))}
-			//return []reflect.Value{reflect.ValueOf(interface{}(nil)), reflect.ValueOf(err)}
-			//return []reflect.Value{reflect.ValueOf(interface{}(nil)), reflect.ValueOf(&err)}
-			//errv := reflect.ValueOf(err)
-			//errv := reflect.ValueOf(err).Elem()
-			//errv := reflect.ValueOf(err)
-			//errv := reflect.ValueOf(reflect.ValueOf(err))
-			//return []reflect.Value{reflect.ValueOf(interface{}(nil)), errv}
-			//return []reflect.Value{reflect.ValueOf(reflect.ValueOf(interface{}(1))), reflect.ValueOf(reflect.ValueOf(errv))}
-			//return []reflect.Value{reflect.ValueOf(reflect.ValueOf(interface{}(1))), reflect.ValueOf(errv)}
-			//return []reflect.Value{reflect.ValueOf(reflect.ValueOf(interface{}(nil))), reflect.ValueOf(errv)}
-			//return []reflect.Value{reflect.ValueOf(reflect.ValueOf(interface{}(nil))), errv}
-			//return []reflect.Value{reflect.ValueOf(reflect.ValueOf(interface{}(nil))), errv} //wrong type
-			//return []reflect.Value{reflect.ValueOf(interface{}(nil)), reflect.ValueOf(errv)}
-			//return []reflect.Value{reflect.ValueOf(interface{}(nil)), reflect.ValueOf(reflect.ValueOf(errv))}
-			//return []reflect.Value{reflect.ValueOf(interface{}(nil)), reflect.ValueOf(reflect.ValueOf(errors.New("error message!!!!")))}
 		} else {
-			//var errValue reflect.Value
 			var errorType = reflect.ValueOf([]error{nil}).Index(0).Type()
 			var reflectValueErrorNilValue = reflect.ValueOf(reflect.New(errorType).Elem())
-			//var errValue reflect.Value = reflectValueErrorNilValue
 
 			return []reflect.Value{reflect.ValueOf(reflect.ValueOf(rv)), reflect.ValueOf(reflectValueErrorNilValue)}
 		}
@@ -131,9 +109,9 @@ func callFunc(callExpr *ast.CallExpr, env *Env) (interface{}, error) {
 	if args, err := callArgs(f, callExpr, env); err != nil {
 		return nil, err
 	} else {
-		fmt.Printf("args: %v\n", args)
+		debug.Printf("args: %v\n", args)
 		for i, arg := range args {
-			fmt.Printf("=>arg[%d]: %v\n", i, arg.Interface())
+			debug.Printf("=>arg[%d]: %v\n", i, arg.Interface())
 		}
 
 		// Call Function
@@ -181,10 +159,10 @@ func makeResult(ret []reflect.Value, isGoFunction bool) (interface{}, error) {
 		a := ret[i]
 		debug.Printf("ret[%d]           : \tType:%v\tValue:%v\tKind():%v\n", i, reflect.TypeOf(a), reflect.ValueOf(a), reflect.ValueOf(a).Kind())
 		b := a.Interface()
-		fmt.Printf("->Interface()    : \tType:%v\tValue:%v\tKind():%v\n", reflect.TypeOf(b), reflect.ValueOf(b), reflect.ValueOf(b).Kind())
+		debug.Printf("->Interface()    : \tType:%v\tValue:%v\tKind():%v\n", reflect.TypeOf(b), reflect.ValueOf(b), reflect.ValueOf(b).Kind())
 		if c, ok := b.(reflect.Value); ok {
 			d := c.Interface()
-			fmt.Printf("->(reflect.Value)    : \tType:%v\tValue:%v\tKind():%v\n", reflect.TypeOf(d), reflect.ValueOf(d), reflect.ValueOf(d).Kind())
+			debug.Printf("->(reflect.Value)    : \tType:%v\tValue:%v\tKind():%v\n", reflect.TypeOf(d), reflect.ValueOf(d), reflect.ValueOf(d).Kind())
 		}
 	}
 	if isGoFunction {
@@ -214,36 +192,23 @@ func makeResult(ret []reflect.Value, isGoFunction bool) (interface{}, error) {
 		return nil, fmt.Errorf("User defined function value 2 did not return reflect value type but returned %v type", ret[1].Type().String())
 	}
 	// User Defined Funcion
-	//result := ret[0].Interface().(reflect.Value)
 	result := ret[0].Interface().(reflect.Value).Interface()
-	//result := ret[0].Interface().(reflect.Value).Interface().(reflect.Value)
-	//TODO: ERROR CASE
 	rvError := ret[1].Interface().(reflect.Value).Interface().(reflect.Value)
-	//rvError := ret[1].Interface().(reflect.Value)
-	//rvError := ret[1]
 
 	if !rvError.IsValid() {
 		return nil, fmt.Errorf("VM function error type is invalid")
 	}
-	/*
-		var errorType = reflect.ValueOf([]error{nil}).Index(0).Type()
-		var vmErrorType = reflect.TypeOf(errors.New(""))
-		if rvError.Type() != errorType && rvError.Type() != vmErrorType {
-			return nil, fmt.Errorf("VM function error type is %v", rvError.Type())
-		}
-	*/
 
 	if rvError.IsNil() {
 		// RETURN RESULT
 		return result, nil
 	}
 
-	/* TODO
-	if rvError.Type() == vmErrorType {
-		return nil, rvError.Interface().(*error)
+	var errorType = reflect.ValueOf([]error{nil}).Index(0).Type()
+	if rvError.Type() == errorType {
+		// RETURN error
+		return nil, rvError.Interface().(error)
 	}
-	*/
 
 	return result, nil
-	//return nil, rvError.Interface().(error)
 }
