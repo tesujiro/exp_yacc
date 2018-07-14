@@ -4,11 +4,11 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"go/scanner"
 	"go/token"
 	"io/ioutil"
 	"os"
 
-	"github.com/rogpeppe/godef/go/scanner"
 	"github.com/tesujiro/exp_yacc/debug"
 	"github.com/tesujiro/exp_yacc/parser"
 	"github.com/tesujiro/exp_yacc/vm"
