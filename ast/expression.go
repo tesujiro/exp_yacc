@@ -51,3 +51,12 @@ type AnonymousCallExpr struct {
 	Expr     Expr
 	SubExprs []Expr
 }
+
+type ArrayExpr struct {
+	Exprs []Expr
+}
+
+type ItemExpr struct {
+	Value Expr
+	Index Expr
+}

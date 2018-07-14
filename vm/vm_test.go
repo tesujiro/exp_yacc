@@ -78,6 +78,20 @@ func TestNumbers(t *testing.T) {
 		{script: "a=1;if a==1 { a=2\n a=3\n }", result: 3},
 		{script: "a=1;if a==1 {\n a=2\n a=3\n }", result: 3},
 		{script: "a=1;if a==1 \n{\n a=2\n a=3\n }", errMessage: "unexpected ';'"},
+		// array
+		{script: "ar={1,2,3};ar", result: []interface{}{1, 2, 3}},
+		{script: "ar={1,\"2\",3};ar", result: []interface{}{1, "2", 3}},
+		{script: "ar={1,2,3};ar[0]", result: 1},
+		{script: "ar={1,2,3};ar[-1]", errMessage: "index out of range"},
+		{script: "ar={1,2,3};ar[3]", errMessage: "index out of range"},
+		{script: "ar={1,2,3};ar[\"x\"]", errMessage: "index cannot convert to int"},
+		{script: "ar=1;ar[1]", errMessage: "type int does not support index operation"},
+		{script: "ar={1,2,3};ar[1]=100;ar", result: []interface{}{1, 100, 3}},
+		{script: "ar={1,2,3};ar[3]=4;ar", result: []interface{}{1, 2, 3, 4}},
+		{script: "ar={1,2,3};ar[4]=4", errMessage: "index out of range"},
+		{script: "{1,2,3}+{4,5,6}", result: []interface{}{1, 2, 3, 4, 5, 6}},
+		{script: "{1,2,3}+4", result: []interface{}{1, 2, 3, 4}},
+		{script: "{1,2,3}+\"4\"", result: []interface{}{1, 2, 3, "4"}},
 	}
 	for _, test := range tests {
 		env := NewEnv()
@@ -97,8 +111,11 @@ func TestNumbers(t *testing.T) {
 				if test.errMessage == "" || err.Error() != test.errMessage {
 					t.Errorf("Run error:%#v want%#v - script:%v\n", err, test.errMessage, test.script)
 				}
-			} else if actual != test.result {
-				t.Errorf("got %#v\nwant %#v - script: %v", actual, test.result, test.script)
+			} else if !reflect.DeepEqual(actual, test.result) {
+				//} else if actual != test.result {
+				t.Errorf("got %v\nwant %#v - script: %v", actual, test.result, test.script)
+				fmt.Println("\tType:\t", reflect.TypeOf(actual))
+				fmt.Println("\tValue:\t", reflect.ValueOf(actual))
 				continue
 			}
 		}

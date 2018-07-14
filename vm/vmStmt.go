@@ -2,6 +2,7 @@ package vm
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 
 	"github.com/tesujiro/exp_yacc/ast"
@@ -136,17 +137,6 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 	return nil, nil
 }
 
-/*func evalAssExpr(lexp ast.Expr, rexp ast.Expr, env *Env) (interface{}, error) {
-var rv interface{}
-var err error
-if rv, err = evalExpr(rexp, env); err != nil {
-	return nil, err
-}
-if rv == nil {
-	return nil, nil
-}
-*/
-
 func evalAssExpr(lexp ast.Expr, val interface{}, env *Env) (interface{}, error) {
 	switch lexp.(type) {
 	case *ast.IdentExpr:
@@ -154,6 +144,40 @@ func evalAssExpr(lexp ast.Expr, val interface{}, env *Env) (interface{}, error) 
 		if err := env.Set(id, val); err != nil {
 			env.Define(id, val)
 		}
+	case *ast.ItemExpr:
+		index, err := evalExpr(lexp.(*ast.ItemExpr).Index, env)
+		if err != nil {
+			fmt.Println("ItemExpr index error") //TODO
+			return nil, err
+		}
+		value, err := evalExpr(lexp.(*ast.ItemExpr).Value, env)
+		if err != nil {
+			fmt.Println("ItemExpr value error") //TODO
+			return nil, err
+		}
+
+		switch reflect.TypeOf(value).Kind() {
+		case reflect.Slice | reflect.Array:
+			if i, ok := index.(int); !ok {
+				return nil, errors.New("index cannot convert to int")
+			} else {
+				if i < 0 || reflect.ValueOf(value).Len() < i {
+					return nil, errors.New("index out of range")
+				}
+				if i == reflect.ValueOf(value).Len() {
+					// append val to array
+					ar := reflect.Append(reflect.ValueOf(value), reflect.ValueOf(val)).Interface()
+					return evalAssExpr(lexp.(*ast.ItemExpr).Value, ar, env)
+				}
+
+				// Set Val To Array
+				reflect.ValueOf(value).Index(i).Set(reflect.ValueOf(val))
+				return val, nil
+			}
+		default:
+			return nil, errors.New("type " + reflect.TypeOf(value).Kind().String() + " does not support index operation")
+		}
+
 	default:
 		// TODO:?
 		return nil, errors.New("Invalid Operation")

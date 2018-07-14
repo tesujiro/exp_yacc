@@ -66,6 +66,21 @@ func runScriptFile(file string) {
 	return
 }
 
+/*
+func dump(stmts []ast.Stmt) {
+	var dump_helper func([]interface{}, string)
+	dump_helper = func(stmts []interface{}, indent string) {
+		for _, stmt := range stmts {
+			fmt.Println(indent, stmt)
+			if reflect.TypeOf(stmt).Kind() == reflect.Slice {
+				dump_helper(reflect.ValueOf(stmt).Elem(), indent+"\t")
+			}
+		}
+	}
+	dump_helper([]interface{}(stmts), "")
+}
+*/
+
 func run() {
 	env := vm.NewEnv()
 	line_scanner := bufio.NewScanner(os.Stdin) // This Scanner
@@ -88,7 +103,9 @@ func run() {
 		l.Init(file, []byte(source), nil /* no error handler */, scanner.ScanComments)
 
 		ast, parseError := parser.Parse(l)
-		debug.Printf("%#v\n", ast)
+		for _, stmt := range ast {
+			debug.Printf("%#v\n", stmt)
+		}
 		if parseError != nil {
 			debug.Println("[", parseError.Error(), "]")
 			//if parseError.Error() == "unexpected $end" || parseError.Error() == "comment not terminated" { //Does not work

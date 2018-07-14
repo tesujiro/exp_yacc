@@ -153,6 +153,18 @@ expr
     {
         $$ = &ast.FuncExpr{Args: $3, Stmts: $6}
     }
+    | '{' opt_newLines exprs opt_newLines '}'
+    {
+    	$$ = &ast.ArrayExpr{Exprs: $3}
+    }
+    | IDENT '[' expr ']'
+    {
+        $$ = &ast.ItemExpr{Value: &ast.IdentExpr{Literal: $1.Literal}, Index:$3}
+    }
+    | expr '[' exprs ']'
+    {
+        $$ = &ast.ItemExpr{Value: $1, Index:$3}
+    }
     | '+' expr %prec UNARY
     {
         $$ = &ast.UnaryExpr{Operator: "+", Expr:$2}

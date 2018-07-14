@@ -1,6 +1,7 @@
 package vm
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -87,6 +88,49 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 	case *ast.ParentExpr:
 		sub := expr.(*ast.ParentExpr).SubExpr
 		return evalExpr(sub, env)
+	case *ast.ArrayExpr:
+		exprs := expr.(*ast.ArrayExpr).Exprs
+		array := make([]interface{}, len(exprs))
+		for i, expr := range exprs {
+			if val, err := evalExpr(expr, env); err != nil {
+				fmt.Println("ArrayExpr error at index:", i) // TODO:
+				return nil, err
+			} else {
+				array[i] = val
+			}
+		}
+		return array, nil
+	case *ast.ItemExpr:
+		//var index, value interface{}
+		////var err error
+		index, err := evalExpr(expr.(*ast.ItemExpr).Index, env)
+		if err != nil {
+			fmt.Println("ItemExpr index error") //TODO
+			return nil, err
+		}
+		value, err := evalExpr(expr.(*ast.ItemExpr).Value, env)
+		if err != nil {
+			fmt.Println("ItemExpr value error") //TODO
+			return nil, err
+		}
+
+		// TODO:Elem()
+
+		switch reflect.TypeOf(value).Kind() {
+		case reflect.Slice | reflect.Array:
+			// index change to int
+			if i, ok := index.(int); !ok {
+				return nil, errors.New("index cannot convert to int")
+			} else {
+				if i < 0 || reflect.ValueOf(value).Len() <= i {
+					return nil, errors.New("index out of range")
+				}
+				return reflect.ValueOf(value).Index(i).Interface(), nil
+			}
+
+		default:
+			return nil, errors.New("type " + reflect.TypeOf(value).Kind().String() + " does not support index operation")
+		}
 	case *ast.UnaryExpr:
 		var val interface{}
 		var err error
@@ -143,11 +187,15 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 			l_kind := reflect.TypeOf(left).Kind()
 			r_kind := reflect.TypeOf(right).Kind()
 			switch {
-			case l_kind == reflect.String || r_kind == reflect.String:
-				return toString(left) + toString(right), nil
+			case (l_kind == reflect.Slice || l_kind == reflect.Array) && (r_kind == reflect.Slice || r_kind == reflect.Array):
+				return reflect.AppendSlice(reflect.ValueOf(left), reflect.ValueOf(right)).Interface(), nil
+			case l_kind == reflect.Slice || l_kind == reflect.Array:
+				return reflect.Append(reflect.ValueOf(left), reflect.ValueOf(right)).Interface(), nil
 			//case l_kind == reflect.Int64 && r_kind == reflect.Int64:
 			case l_kind == reflect.Int && r_kind == reflect.Int:
 				return toInt(left) + toInt(right), nil
+			case l_kind == reflect.String || r_kind == reflect.String:
+				return toString(left) + toString(right), nil
 			default:
 				return toFloat64(left) + toFloat64(right), nil
 			}
