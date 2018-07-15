@@ -10,7 +10,7 @@ before_install:
   - go get -u github.com/tesujiro/exp_yacc
 
 script:
-  - go test -v -coverprofile=coverage.txt -covermode=count . ./vm  
+  - go test -v -coverprofile=coverage.txt -covermode=count . ./vm ./lib
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
