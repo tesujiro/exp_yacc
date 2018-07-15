@@ -2,11 +2,11 @@ package lib
 
 import (
 	"fmt"
+	"go/scanner"
 	"go/token"
 	"reflect"
 	"testing"
 
-	"github.com/rogpeppe/godef/go/scanner"
 	"github.com/tesujiro/exp_yacc/parser"
 	"github.com/tesujiro/exp_yacc/vm"
 )

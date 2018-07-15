@@ -66,8 +66,8 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 			fallthrough
 		default:
 			for i, expr := range left {
-				if i > len(right_values) {
-					break
+				if i >= len(right_values) {
+					return right_values[len(right_values)-1], nil
 				}
 				if _, err := evalAssExpr(expr, right_values[i], env); err != nil {
 					return nil, err

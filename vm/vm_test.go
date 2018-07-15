@@ -61,6 +61,8 @@ func TestNumbers(t *testing.T) {
 		// multi result
 		{script: "a,b=1,2;a", result: 1},
 		{script: "a,b=1,2;b", result: 2},
+		{script: "a,b=1,2,3;b", result: 2},
+		{script: "a,b,c=1,2;b", result: 2},
 		// if
 		{script: "a=1;if a==1 { a=2 }", result: 2},
 		{script: "a=1;if a==1 { a=2 };a", result: 2},
