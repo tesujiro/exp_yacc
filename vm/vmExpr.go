@@ -169,6 +169,32 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 			}
 		*/
 		switch expr.(*ast.BinOpExpr).Operator {
+		case "||":
+			if l, ok := left.(bool); !ok {
+				return nil, errors.New("cannot convert to bool")
+			} else {
+				if l {
+					return true, nil
+				}
+				if r, ok := right.(bool); !ok {
+					return nil, errors.New("cannot convert to bool")
+				} else {
+					return r, nil
+				}
+			}
+		case "&&":
+			if l, ok := left.(bool); !ok {
+				return nil, errors.New("cannot convert to bool")
+			} else {
+				if !l {
+					return false, nil
+				}
+				if r, ok := right.(bool); !ok {
+					return nil, errors.New("cannot convert to bool")
+				} else {
+					return r, nil
+				}
+			}
 		case "==":
 			return left == right, nil
 		case "!=":

@@ -56,6 +56,10 @@ func (l *Lexer) Lex(lval *yySymType) (token_id int) {
 			token_id = GE
 		case "<=":
 			token_id = LE
+		case "&&":
+			token_id = ANDAND
+		case "||":
+			token_id = OROR
 		default:
 			if len(tok.String()) == 1 {
 				token_id = int(tok.String()[0])

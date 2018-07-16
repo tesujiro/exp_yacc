@@ -8,6 +8,7 @@ import (
 	"go/token"
 	"io/ioutil"
 	"os"
+	"reflect"
 
 	"github.com/tesujiro/exp_yacc/debug"
 	"github.com/tesujiro/exp_yacc/parser"
@@ -66,20 +67,50 @@ func runScriptFile(file string) {
 	return
 }
 
-/*
-func dump(stmts []ast.Stmt) {
-	var dump_helper func([]interface{}, string)
-	dump_helper = func(stmts []interface{}, indent string) {
-		for _, stmt := range stmts {
-			fmt.Println(indent, stmt)
-			if reflect.TypeOf(stmt).Kind() == reflect.Slice {
-				dump_helper(reflect.ValueOf(stmt).Elem(), indent+"\t")
-			}
-		}
+func dump(obj interface{}) {
+	p := func(indent string, obj interface{}) {
+		//fmt.Printf("%s%v\n", indent, obj)
+		fmt.Printf("%s%#v\n", indent, reflect.ValueOf(obj).Interface())
 	}
-	dump_helper([]interface{}(stmts), "")
+
+	var dump_helper func(string, interface{})
+	dump_helper = func(indent string, obj interface{}) {
+		next_indent := indent + "\t"
+		t := reflect.TypeOf(obj)
+		v := reflect.ValueOf(obj)
+		switch t.Kind() {
+		case reflect.Ptr:
+			fmt.Println(indent, "pointer!!")
+			dump_helper(next_indent, v.Pointer())
+		case reflect.Interface:
+			fmt.Println(indent, "interface")
+			p(indent, v.Elem())
+		case reflect.Slice | reflect.Array:
+			//case reflect.Array:
+			fmt.Println(indent, "slice|array")
+			p(indent, obj)
+			for i := 0; i < v.Len(); i++ {
+				dump_helper(next_indent, v.Index(i))
+			}
+		case reflect.Struct:
+			for i := 0; i < v.NumField(); i++ {
+				p(indent, v.Field(i))
+			}
+		default:
+			fmt.Println(indent, "default Kined():", t.Kind())
+			p(indent, obj)
+		}
+		/*
+			for _, stmt := range stmts {
+				fmt.Println(indent, stmt)
+				if reflect.TypeOf(stmt).Kind() == reflect.Slice {
+					dump_helper(reflect.ValueOf(stmt).Elem(), indent+"\t")
+				}
+			}
+		*/
+	}
+	dump_helper("", obj)
 }
-*/
 
 func run() {
 	env := vm.NewEnv()
@@ -103,9 +134,12 @@ func run() {
 		l.Init(file, []byte(source), nil /* no error handler */, scanner.ScanComments)
 
 		ast, parseError := parser.Parse(l)
-		for _, stmt := range ast {
-			debug.Printf("%#v\n", stmt)
-		}
+		/*
+			for _, stmt := range ast {
+				debug.Printf("%#v\n", stmt)
+			}
+		*/
+		//dump(ast)
 		if parseError != nil {
 			debug.Println("[", parseError.Error(), "]")
 			//if parseError.Error() == "unexpected $end" || parseError.Error() == "comment not terminated" { //Does not work

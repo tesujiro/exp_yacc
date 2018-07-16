@@ -22,9 +22,11 @@ import "github.com/tesujiro/exp_yacc/ast"
 %type<expr>   expr
 %type<exprs>   exprs
 %type<ident_args>   ident_args
-%token<token> IDENT NUMBER STRING TRUE FALSE NIL FUNC RETURN EQEQ NEQ GE LE IF ELSE
+%token<token> IDENT NUMBER STRING TRUE FALSE NIL FUNC RETURN EQEQ NEQ GE LE IF ELSE ANDAND OROR
 
 %right '='
+%left OROR
+%left ANDAND
 %left IDENT
 %left EQEQ NEQ
 %left '>' '<' GE LE
@@ -57,17 +59,17 @@ stmts
     }
 
 stmt
-    : stmt_if
-    {
-        $$ = $1
-    }
-    | expr '=' expr
+    : expr '=' expr
     {
         $$ = &ast.AssStmt{Left: []ast.Expr{$1}, Right: []ast.Expr{$3}}
     }
     | exprs '=' exprs
     {
         $$ = &ast.AssStmt{Left: $1, Right: $3}
+    }
+    | stmt_if
+    {
+        $$ = $1
     }
     | expr
     {
@@ -176,6 +178,14 @@ expr
     | '(' expr ')'
     {
         $$ = &ast.ParentExpr{SubExpr: $2}
+    }
+    | expr OROR expr
+    {
+        $$ = &ast.BinOpExpr{Left: $1, Operator: "||", Right: $3}
+    }
+    | expr ANDAND expr
+    {
+        $$ = &ast.BinOpExpr{Left: $1, Operator: "&&", Right: $3}
     }
     | expr '+' expr
     {

@@ -49,6 +49,9 @@ func TestNumbers(t *testing.T) {
 		{script: "\"a b c\"-\" d e f\"", result: float64(0)},
 		{script: "15.2%7.1", result: 1},
 		{script: "a=1;b=2;a+b", result: 3},
+		{script: "a=1;b=0.1;c=15;(a+b)*c", result: float64(16.5)},
+		{script: "a=1;b=0.1;c=15;(a+b)*c/0.5", result: float64(33)},
+		// bool
 		{script: "a=1;b=2;a+1==b", result: true},
 		{script: "a=1;b=2;a+1!=b", result: false},
 		{script: "a=1;b=2;a<b", result: true},
@@ -56,8 +59,13 @@ func TestNumbers(t *testing.T) {
 		{script: "a=1;b=2;a>b", result: false},
 		{script: "a=1;b=1;a>=b", result: true},
 		{script: "a=1;b=0.1;a>b", result: true},
-		{script: "a=1;b=0.1;c=15;(a+b)*c", result: float64(16.5)},
-		{script: "a=1;b=0.1;c=15;(a+b)*c/0.5", result: float64(33)},
+		{script: "a=1;a==1", result: true},
+		{script: "a=1;b=2;a==1&&b==2", result: true},
+		{script: "a=1;b=2;a==2&&b==2", result: false},
+		{script: "a=1;b=2;a==1||b==2", result: true},
+		{script: "a=1;b=2;a==2||b==2", result: true},
+		{script: "12&&34", errMessage: "cannot convert to bool"},
+
 		// multi result
 		{script: "a,b=1,2;a", result: 1},
 		{script: "a,b=1,2;b", result: 2},
