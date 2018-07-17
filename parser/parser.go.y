@@ -22,7 +22,7 @@ import "github.com/tesujiro/exp_yacc/ast"
 %type<expr>   expr
 %type<exprs>   exprs
 %type<ident_args>   ident_args
-%token<token> IDENT NUMBER STRING TRUE FALSE NIL FUNC RETURN EQEQ NEQ GE LE IF ELSE ANDAND OROR
+%token<token> IDENT NUMBER STRING TRUE FALSE NIL FUNC RETURN EQEQ NEQ GE LE IF ELSE ANDAND OROR LEN
 
 %right '='
 %left OROR
@@ -145,6 +145,10 @@ expr
     | FUNC IDENT '(' ident_args ')''{' program '}'
     {
     	$$ = &ast.FuncExpr{Name: $2.Literal, Args: $4, Stmts: $7}
+    }
+    | LEN '(' expr ')'
+    {
+        $$ = &ast.LenExpr{Expr: $3}
     }
     /* conflict shift */
     | expr '(' exprs ')'

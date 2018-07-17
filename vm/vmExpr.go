@@ -11,7 +11,7 @@ import (
 )
 
 func toInt(val interface{}) int {
-	switch reflect.TypeOf(val).Kind() {
+	switch reflect.ValueOf(val).Kind() {
 	case reflect.Float64, reflect.Float32:
 		return int(val.(float64))
 	}
@@ -20,7 +20,7 @@ func toInt(val interface{}) int {
 }
 
 func toFloat64(val interface{}) float64 {
-	switch reflect.TypeOf(val).Kind() {
+	switch reflect.ValueOf(val).Kind() {
 	case reflect.Int64, reflect.Int32, reflect.Int16, reflect.Int8, reflect.Int:
 		return float64(val.(int))
 	}
@@ -29,7 +29,7 @@ func toFloat64(val interface{}) float64 {
 }
 
 func toString(val interface{}) string {
-	switch reflect.TypeOf(val).Kind() {
+	switch reflect.ValueOf(val).Kind() {
 	case reflect.String:
 		return val.(string)
 	case reflect.Int64, reflect.Int32, reflect.Int16, reflect.Int8, reflect.Int:
@@ -83,6 +83,18 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 		return (defineFunc(expr.(*ast.FuncExpr), env))
 	case *ast.CallExpr:
 		return (callFunc(expr.(*ast.CallExpr), env))
+	case *ast.LenExpr:
+		sub := expr.(*ast.LenExpr).Expr
+		result, err := evalExpr(sub, env)
+		if err != nil {
+			return nil, err
+		}
+		switch reflect.ValueOf(result).Kind() {
+		case reflect.Slice, reflect.Array, reflect.String:
+			return reflect.ValueOf(result).Len(), nil
+		default:
+			return nil, fmt.Errorf("type %s does not support len operation", reflect.ValueOf(result).Kind().String())
+		}
 	case *ast.AnonymousCallExpr:
 		return (callAnonymousFunc(expr.(*ast.AnonymousCallExpr), env))
 	case *ast.ParentExpr:
@@ -116,8 +128,8 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 
 		// TODO:Elem()
 
-		switch reflect.TypeOf(value).Kind() {
-		case reflect.Slice | reflect.Array:
+		switch reflect.ValueOf(value).Kind() {
+		case reflect.Slice, reflect.Array:
 			// index change to int
 			if i, ok := index.(int); !ok {
 				return nil, errors.New("index cannot convert to int")
@@ -129,7 +141,7 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 			}
 
 		default:
-			return nil, errors.New("type " + reflect.TypeOf(value).Kind().String() + " does not support index operation")
+			return nil, errors.New("type " + reflect.ValueOf(value).Kind().String() + " does not support index operation")
 		}
 	case *ast.UnaryExpr:
 		var val interface{}
@@ -141,7 +153,7 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 		case "+":
 			return val, nil
 		case "-":
-			kind := reflect.TypeOf(val).Kind()
+			kind := reflect.ValueOf(val).Kind()
 			switch kind {
 			case reflect.Int64, reflect.Int32, reflect.Int16, reflect.Int8, reflect.Int:
 				return -1 * toInt(val), nil
@@ -210,8 +222,8 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 		case "<=":
 			return toFloat64(left) <= toFloat64(right), nil
 		case "+":
-			l_kind := reflect.TypeOf(left).Kind()
-			r_kind := reflect.TypeOf(right).Kind()
+			l_kind := reflect.ValueOf(left).Kind()
+			r_kind := reflect.ValueOf(right).Kind()
 			switch {
 			case (l_kind == reflect.Slice || l_kind == reflect.Array) && (r_kind == reflect.Slice || r_kind == reflect.Array):
 				return reflect.AppendSlice(reflect.ValueOf(left), reflect.ValueOf(right)).Interface(), nil
@@ -226,8 +238,8 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 				return toFloat64(left) + toFloat64(right), nil
 			}
 		case "-":
-			l_kind := reflect.TypeOf(left).Kind()
-			r_kind := reflect.TypeOf(right).Kind()
+			l_kind := reflect.ValueOf(left).Kind()
+			r_kind := reflect.ValueOf(right).Kind()
 			switch {
 			case l_kind == reflect.Int && r_kind == reflect.Int:
 				return toInt(left) - toInt(right), nil
@@ -235,8 +247,8 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 				return toFloat64(left) - toFloat64(right), nil
 			}
 		case "*":
-			l_kind := reflect.TypeOf(left).Kind()
-			r_kind := reflect.TypeOf(right).Kind()
+			l_kind := reflect.ValueOf(left).Kind()
+			r_kind := reflect.ValueOf(right).Kind()
 			switch {
 			case l_kind == reflect.Int && r_kind == reflect.Int:
 				return toInt(left) * toInt(right), nil
@@ -244,8 +256,8 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 				return toFloat64(left) * toFloat64(right), nil
 			}
 		case "/":
-			l_kind := reflect.TypeOf(left).Kind()
-			r_kind := reflect.TypeOf(right).Kind()
+			l_kind := reflect.ValueOf(left).Kind()
+			r_kind := reflect.ValueOf(right).Kind()
 			if right == 0 {
 				return nil, fmt.Errorf("devision by zero")
 			}

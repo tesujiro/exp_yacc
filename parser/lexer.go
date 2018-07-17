@@ -23,6 +23,7 @@ var opName = map[string]int{
 	"else":   ELSE,
 	"func":   FUNC,
 	"return": RETURN,
+	"len":    LEN,
 }
 
 func (l *Lexer) Lex(lval *yySymType) (token_id int) {

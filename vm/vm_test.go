@@ -165,6 +165,10 @@ func TestFuncCall(t *testing.T) {
 		// error while execute function
 		{script: "func (x){return x+z}(10)", errMessage: "unknown symbol 'z'"},
 		{script: "func (x){return func(y) {return x*10+y+z};}(10)(2)", errMessage: "unknown symbol 'z'"},
+		// len opeartion
+		{script: "len(\"1234567890\")", result: 10},
+		{script: "len({1,2,3})", result: 3},
+		{script: "len(1)", errMessage: "type int does not support len operation"},
 	}
 	for _, test := range tests {
 		env := NewEnv()

@@ -47,6 +47,10 @@ type CallExpr struct {
 	SubExprs []Expr
 }
 
+type LenExpr struct {
+	Expr Expr
+}
+
 type AnonymousCallExpr struct {
 	Expr     Expr
 	SubExprs []Expr
