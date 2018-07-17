@@ -21,3 +21,13 @@ type IfStmt struct {
 type ReturnStmt struct {
 	Exprs []Expr
 }
+
+type LoopStmt struct {
+	Stmts []Stmt
+}
+
+type BreakStmt struct {
+}
+
+type ContinueStmt struct {
+}

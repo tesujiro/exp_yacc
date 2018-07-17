@@ -16,14 +16,17 @@ type Lexer struct {
 
 // opName is a correction of operation names.
 var opName = map[string]int{
-	"true":   TRUE,
-	"false":  FALSE,
-	"nil":    NIL,
-	"if":     IF,
-	"else":   ELSE,
-	"func":   FUNC,
-	"return": RETURN,
-	"len":    LEN,
+	"true":     TRUE,
+	"false":    FALSE,
+	"nil":      NIL,
+	"if":       IF,
+	"else":     ELSE,
+	"func":     FUNC,
+	"return":   RETURN,
+	"len":      LEN,
+	"for":      FOR,
+	"break":    BREAK,
+	"continue": CONTINUE,
 }
 
 func (l *Lexer) Lex(lval *yySymType) (token_id int) {

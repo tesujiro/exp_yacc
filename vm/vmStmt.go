@@ -8,11 +8,20 @@ import (
 	"github.com/tesujiro/exp_yacc/ast"
 )
 
+var (
+	ErrBreak    = errors.New("unexpected break")
+	ErrContinue = errors.New("unexpected continue")
+)
+
 func Run(stmts []ast.Stmt, env *Env) (interface{}, error) {
 	var result interface{}
 	var err error
 	for _, stmt := range stmts {
 		switch stmt.(type) {
+		case *ast.BreakStmt:
+			return nil, ErrBreak
+		case *ast.ContinueStmt:
+			return nil, ErrContinue
 		case *ast.ReturnStmt:
 			result, err = runSingleStmt(stmt, env)
 			if err != nil {
@@ -133,6 +142,19 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 		default:
 			return resultExpr, nil
 		}
+	case *ast.LoopStmt:
+		newEnv := env.NewEnv()
+		defer newEnv.Destroy()
+		for {
+			_, err := Run(stmt.(*ast.LoopStmt).Stmts, newEnv)
+			if err == ErrBreak {
+				break
+			}
+			if err == ErrContinue {
+				continue
+			}
+		}
+		return nil, nil
 	}
 	return nil, nil
 }

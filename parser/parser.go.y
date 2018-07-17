@@ -22,7 +22,7 @@ import "github.com/tesujiro/exp_yacc/ast"
 %type<expr>   expr
 %type<exprs>   exprs
 %type<ident_args>   ident_args
-%token<token> IDENT NUMBER STRING TRUE FALSE NIL FUNC RETURN EQEQ NEQ GE LE IF ELSE ANDAND OROR LEN
+%token<token> IDENT NUMBER STRING TRUE FALSE NIL FUNC RETURN EQEQ NEQ GE LE IF ELSE ANDAND OROR LEN FOR BREAK CONTINUE
 
 %right '='
 %left OROR
@@ -70,6 +70,18 @@ stmt
     | stmt_if
     {
         $$ = $1
+    }
+    | FOR '{' program '}'
+    {
+        $$ = &ast.LoopStmt{Stmts: $3}
+    }
+    | BREAK
+    {
+        $$ = &ast.BreakStmt{}
+    }
+    | CONTINUE
+    {
+        $$ = &ast.ContinueStmt{}
     }
     | expr
     {

@@ -71,7 +71,7 @@ func TestNumbers(t *testing.T) {
 		{script: "a,b=1,2;b", result: 2},
 		{script: "a,b=1,2,3;b", result: 2},
 		{script: "a,b,c=1,2;b", result: 2},
-		// if
+		// if statement
 		{script: "a=1;if a==1 { a=2 }", result: 2},
 		{script: "a=1;if a==1 { a=2 };a", result: 2},
 		{script: "a=1;if a==1 { env_test=2 };env_test", errMessage: "unknown symbol 'env_test'"},
@@ -88,6 +88,11 @@ func TestNumbers(t *testing.T) {
 		{script: "a=1;if a==1 { a=2\n a=3\n }", result: 3},
 		{script: "a=1;if a==1 {\n a=2\n a=3\n }", result: 3},
 		{script: "a=1;if a==1 \n{\n a=2\n a=3\n }", errMessage: "unexpected ';'"},
+		// for statement
+		{script: "a=0;for{ if a==10 { break }; a= a+1 };a", result: 10},
+		{script: "a=0;b=0;for{ a=a+1;if a==10 { break }; if b==5 {continue};b= b+1 };b", result: 5},
+		//{script: "a=0;for a<=10 { a= a+1 };a", result: 10},
+		//{script: "Fn=func(){a=1; for { if a==3 {return a} ; a=a+1}; Fn()", result: 3},
 		// array
 		{script: "ar={1,2,3};ar", result: []interface{}{1, 2, 3}},
 		{script: "ar={1,\"2\",3};ar", result: []interface{}{1, "2", 3}},
