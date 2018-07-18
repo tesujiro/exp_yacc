@@ -15,6 +15,7 @@ import (
 )
 
 var dbg = flag.Bool("d", false, "debug option")
+var ast_dump = flag.Bool("a", false, "AST dump option")
 var file string
 
 func main() {
@@ -93,7 +94,9 @@ func run() {
 				debug.Printf("%#v\n", stmt)
 			}
 		*/
-		//parser.Dump(ast)
+		if *ast_dump {
+			parser.Dump(ast)
+		}
 		if parseError != nil {
 			debug.Println("[", parseError.Error(), "]")
 			//if parseError.Error() == "unexpected $end" || parseError.Error() == "comment not terminated" { //Does not work
