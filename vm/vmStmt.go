@@ -11,9 +11,18 @@ import (
 var (
 	ErrBreak    = errors.New("unexpected break")
 	ErrContinue = errors.New("unexpected continue")
+	ErrReturn   = errors.New("unexpected return")
 )
 
 func Run(stmts []ast.Stmt, env *Env) (interface{}, error) {
+	if result, err := run(stmts, env); err == ErrReturn {
+		return result, nil
+	} else {
+		return result, err
+	}
+}
+
+func run(stmts []ast.Stmt, env *Env) (interface{}, error) {
 	var result interface{}
 	var err error
 	for _, stmt := range stmts {
@@ -27,7 +36,7 @@ func Run(stmts []ast.Stmt, env *Env) (interface{}, error) {
 			if err != nil {
 				return nil, err
 			}
-			return result, err
+			return result, ErrReturn
 		default:
 			result, err = runSingleStmt(stmt, env)
 			if err != nil {
@@ -94,7 +103,7 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 			return nil, err
 		}
 		if result.(bool) {
-			result, err = Run(stmt.(*ast.IfStmt).Then, child)
+			result, err = run(stmt.(*ast.IfStmt).Then, child)
 			if err != nil {
 				return nil, err
 			}
@@ -106,7 +115,7 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 				return nil, err
 			}
 			if result.(bool) {
-				result, err = Run(stmt.(*ast.IfStmt).Then, child)
+				result, err = run(stmt.(*ast.IfStmt).Then, child)
 				if err != nil {
 					return nil, err
 				}
@@ -115,7 +124,7 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 		}
 
 		if len(stmt.(*ast.IfStmt).Else) > 0 {
-			result, err = Run(stmt.(*ast.IfStmt).Else, child)
+			result, err = run(stmt.(*ast.IfStmt).Else, child)
 			if err != nil {
 				return nil, err
 			}
@@ -146,12 +155,32 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 		newEnv := env.NewEnv()
 		defer newEnv.Destroy()
 		for {
-			_, err := Run(stmt.(*ast.LoopStmt).Stmts, newEnv)
+			exp := stmt.(*ast.LoopStmt).Expr
+			if exp != nil {
+				if result, err := evalExpr(exp, newEnv); err != nil {
+					return nil, err
+				} else if b, ok := result.(bool); !ok {
+					return nil, fmt.Errorf("for condition type %s cannot convert to bool", reflect.TypeOf(result).Kind())
+				} else if !b {
+					break
+				}
+			}
+
+			//fmt.Println("run")
+			ret, err := run(stmt.(*ast.LoopStmt).Stmts, newEnv)
+			//fmt.Println("=> ret:", ret, "\terr:", err)
+
+			if err == ErrReturn {
+				return ret, nil
+			}
 			if err == ErrBreak {
 				break
 			}
 			if err == ErrContinue {
 				continue
+			}
+			if err != nil {
+				return nil, err
 			}
 		}
 		return nil, nil

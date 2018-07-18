@@ -40,7 +40,7 @@ func defineFunc(funcExpr *ast.FuncExpr, env *Env) (interface{}, error) {
 		debug.Printf("Env: %#v\n", *env)
 		debug.Printf("newEnv: %#v\n", *newEnv)
 
-		if rv, err := Run(funcExpr.Stmts, newEnv); err != nil {
+		if rv, err := run(funcExpr.Stmts, newEnv); err != nil && err != ErrReturn {
 			errv := reflect.ValueOf(reflect.ValueOf(&err).Elem())
 			debug.Println("errv:\t", errv)
 			debug.Println("errv.Type:\t", errv.Type())
@@ -114,8 +114,10 @@ func callFunc(callExpr *ast.CallExpr, env *Env) (interface{}, error) {
 			debug.Printf("=>arg[%d]: %v\n", i, arg.Interface())
 		}
 
+		//fmt.Println("f.Call Start")
 		// Call Function
 		refvals := f.Call(args)
+		//fmt.Println("f.Call End")
 
 		return makeResult(refvals, isGoFunc(f.Type()))
 	}

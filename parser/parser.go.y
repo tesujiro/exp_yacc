@@ -75,6 +75,10 @@ stmt
     {
         $$ = &ast.LoopStmt{Stmts: $3}
     }
+    | FOR expr '{' program '}'
+    {
+        $$ = &ast.LoopStmt{Stmts: $4, Expr: $2}
+    }
     | BREAK
     {
         $$ = &ast.BreakStmt{}

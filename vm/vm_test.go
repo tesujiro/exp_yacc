@@ -91,8 +91,13 @@ func TestNumbers(t *testing.T) {
 		// for statement
 		{script: "a=0;for{ if a==10 { break }; a= a+1 };a", result: 10},
 		{script: "a=0;b=0;for{ a=a+1;if a==10 { break }; if b==5 {continue};b= b+1 };b", result: 5},
-		//{script: "a=0;for a<=10 { a= a+1 };a", result: 10},
-		//{script: "Fn=func(){a=1; for { if a==3 {return a} ; a=a+1}; Fn()", result: 3},
+		{script: "a=0;for a<=10 { a= a+1 };a", result: 11},
+		{script: "a=0;for b { a= a+1 };a", errMessage: "unknown symbol 'b'"},
+		{script: "a=0;for a { a= a+1 };a", errMessage: "for condition type int cannot convert to bool"},
+		{script: "a=0;for{ a=a+1;if a==10 { return a };};a", result: 10},
+		{script: "a=0;for{ a=10;return a };a", result: 10},
+		//{script: "Fn=func(){ a=0; for a<=100 { if a==10 {return 123};a=a+1} }; Fn()", result: 3},
+		//{script: "Fn=func(){a=1; for { if a==3 {return a;} ; a=a+1}; Fn()", result: 3},
 		// array
 		{script: "ar={1,2,3};ar", result: []interface{}{1, 2, 3}},
 		{script: "ar={1,\"2\",3};ar", result: []interface{}{1, "2", 3}},
@@ -110,6 +115,7 @@ func TestNumbers(t *testing.T) {
 	}
 	for _, test := range tests {
 		env := NewEnv()
+		//fmt.Println("*************************\nTEST SCRIPT:", test.script)
 		l := new(parser.Lexer)
 
 		fset := token.NewFileSet()                              // positions are relative to fset

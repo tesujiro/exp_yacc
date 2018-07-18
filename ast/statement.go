@@ -24,6 +24,7 @@ type ReturnStmt struct {
 
 type LoopStmt struct {
 	Stmts []Stmt
+	Expr  Expr
 }
 
 type BreakStmt struct {
