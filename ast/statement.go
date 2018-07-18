@@ -23,8 +23,8 @@ type ReturnStmt struct {
 }
 
 type LoopStmt struct {
-	Stmts []Stmt
 	Expr  Expr
+	Stmts []Stmt
 }
 
 type BreakStmt struct {
