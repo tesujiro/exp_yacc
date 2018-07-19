@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/pkg/profile"
 	"github.com/tesujiro/exp_yacc/debug"
 	"github.com/tesujiro/exp_yacc/parser"
 	"github.com/tesujiro/exp_yacc/vm"
@@ -16,6 +17,8 @@ import (
 
 var dbg = flag.Bool("d", false, "debug option")
 var ast_dump = flag.Bool("a", false, "AST dump option")
+var mem_prof = flag.Bool("m", false, "Memory Profile")
+var cpu_prof = flag.Bool("c", false, "CPU Profile")
 var file string
 
 func main() {
@@ -24,6 +27,12 @@ func main() {
 
 	if *dbg {
 		debug.On()
+	}
+	if *cpu_prof {
+		defer profile.Start().Stop()
+	}
+	if *mem_prof {
+		defer profile.Start(profile.MemProfile).Stop()
 	}
 
 	if file != "" {
