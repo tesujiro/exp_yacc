@@ -51,6 +51,9 @@ func defineFunc(funcExpr *ast.FuncExpr, env *Env) (interface{}, error) {
 		} else {
 			var errorType = reflect.ValueOf([]error{nil}).Index(0).Type()
 			var reflectValueErrorNilValue = reflect.ValueOf(reflect.New(errorType).Elem())
+			debug.Println("return value:\t", rv)
+			debug.Println("return value Type:\t", reflect.TypeOf(rv))
+			debug.Println("return value Value:\t", reflect.ValueOf(rv))
 
 			return []reflect.Value{reflect.ValueOf(reflect.ValueOf(rv)), reflect.ValueOf(reflectValueErrorNilValue)}
 		}

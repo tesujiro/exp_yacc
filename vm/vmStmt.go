@@ -33,13 +33,13 @@ func run(stmts []ast.Stmt, env *Env) (interface{}, error) {
 			return nil, ErrContinue
 		case *ast.ReturnStmt:
 			result, err = runSingleStmt(stmt, env)
-			if err != nil {
+			if err != nil && err != ErrReturn {
 				return nil, err
 			}
 			return result, ErrReturn
 		default:
 			result, err = runSingleStmt(stmt, env)
-			if err != nil {
+			if err != nil && err != ErrReturn {
 				return nil, err
 			}
 		}
@@ -105,7 +105,7 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 		if result.(bool) {
 			result, err = run(stmt.(*ast.IfStmt).Then, child)
 			if err != nil {
-				return nil, err
+				return result, err
 			}
 			return result, nil
 		}
@@ -117,7 +117,7 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 			if result.(bool) {
 				result, err = run(stmt.(*ast.IfStmt).Then, child)
 				if err != nil {
-					return nil, err
+					return result, err
 				}
 				return result, nil
 			}
@@ -126,7 +126,7 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 		if len(stmt.(*ast.IfStmt).Else) > 0 {
 			result, err = run(stmt.(*ast.IfStmt).Else, child)
 			if err != nil {
-				return nil, err
+				return result, err
 			}
 		}
 		return result, nil
