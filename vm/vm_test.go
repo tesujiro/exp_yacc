@@ -107,19 +107,19 @@ func TestNumbers(t *testing.T) {
 		//{script: "Fn=func(){ a=0; for a<=100 { if a==10 {return 123};a=a+1} }; Fn()", result: 3},
 		//{script: "Fn=func(){a=1; for { if a==3 {return a;} ; a=a+1}; Fn()", result: 3},
 		// array
-		{script: "ar={1,2,3};ar", result: []interface{}{1, 2, 3}},
-		{script: "ar={1,\"2\",3};ar", result: []interface{}{1, "2", 3}},
-		{script: "ar={1,2,3};ar[0]", result: 1},
-		{script: "ar={1,2,3};ar[-1]", errMessage: "index out of range"},
-		{script: "ar={1,2,3};ar[3]", errMessage: "index out of range"},
-		{script: "ar={1,2,3};ar[\"x\"]", errMessage: "index cannot convert to int"},
+		{script: "ar=[1,2,3];ar", result: []interface{}{1, 2, 3}},
+		{script: "ar=[1,\"2\",3];ar", result: []interface{}{1, "2", 3}},
+		{script: "ar=[1,2,3];ar[0]", result: 1},
+		{script: "ar=[1,2,3];ar[-1]", errMessage: "index out of range"},
+		{script: "ar=[1,2,3];ar[3]", errMessage: "index out of range"},
+		{script: "ar=[1,2,3];ar[\"x\"]", errMessage: "index cannot convert to int"},
 		{script: "ar=1;ar[1]", errMessage: "type int does not support index operation"},
-		{script: "ar={1,2,3};ar[1]=100;ar", result: []interface{}{1, 100, 3}},
-		{script: "ar={1,2,3};ar[3]=4;ar", result: []interface{}{1, 2, 3, 4}},
-		{script: "ar={1,2,3};ar[4]=4", errMessage: "index out of range"},
-		{script: "{1,2,3}+{4,5,6}", result: []interface{}{1, 2, 3, 4, 5, 6}},
-		{script: "{1,2,3}+4", result: []interface{}{1, 2, 3, 4}},
-		{script: "{1,2,3}+\"4\"", result: []interface{}{1, 2, 3, "4"}},
+		{script: "ar=[1,2,3];ar[1]=100;ar", result: []interface{}{1, 100, 3}},
+		{script: "ar=[1,2,3];ar[3]=4;ar", result: []interface{}{1, 2, 3, 4}},
+		{script: "ar=[1,2,3];ar[4]=4", errMessage: "index out of range"},
+		{script: "[1,2,3]+[4,5,6]", result: []interface{}{1, 2, 3, 4, 5, 6}},
+		{script: "[1,2,3]+4", result: []interface{}{1, 2, 3, 4}},
+		{script: "[1,2,3]+\"4\"", result: []interface{}{1, 2, 3, "4"}},
 	}
 	for _, test := range tests {
 		env := NewEnv()
@@ -190,7 +190,7 @@ func TestFuncCall(t *testing.T) {
 		{script: "func (x){return func(y) {return x*10+y+z};}(10)(2)", errMessage: "unknown symbol 'z'"},
 		// len opeartion
 		{script: "len(\"1234567890\")", result: 10},
-		{script: "len({1,2,3})", result: 3},
+		{script: "len([1,2,3])", result: 3},
 		{script: "len(1)", errMessage: "type int does not support len operation"},
 	}
 	for _, test := range tests {
@@ -198,7 +198,7 @@ func TestFuncCall(t *testing.T) {
 		env.Define("println", reflect.ValueOf(fmt.Println))
 		env.Define("printf", reflect.ValueOf(fmt.Printf))
 
-		fmt.Println("*************************\nTEST SCRIPT:", test.script)
+		//fmt.Println("*************************\nTEST SCRIPT:", test.script)
 		l := new(parser.Lexer)
 
 		fset := token.NewFileSet()                              // positions are relative to fset

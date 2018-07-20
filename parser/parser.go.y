@@ -75,6 +75,8 @@ stmt
     {
         $$ = &ast.LoopStmt{Stmts: $3}
     }
+    /*
+    */
     | FOR expr '{' program '}'
     {
         $$ = &ast.LoopStmt{Stmts: $4, Expr: $2}
@@ -175,7 +177,10 @@ expr
     {
         $$ = &ast.FuncExpr{Args: $3, Stmts: $6}
     }
+    /*
     | '{' opt_newLines exprs opt_newLines '}'
+    */
+    | '[' opt_newLines exprs opt_newLines ']'
     {
     	$$ = &ast.ArrayExpr{Exprs: $3}
     }
