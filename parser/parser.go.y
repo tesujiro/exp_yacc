@@ -22,7 +22,7 @@ import "github.com/tesujiro/exp_yacc/ast"
 %type<expr>   expr
 %type<exprs>   exprs
 %type<ident_args>   ident_args
-%token<token> IDENT NUMBER STRING TRUE FALSE NIL FUNC RETURN EQEQ NEQ GE LE IF ELSE ANDAND OROR LEN FOR BREAK CONTINUE
+%token<token> IDENT NUMBER STRING TRUE FALSE NIL FUNC RETURN EQEQ NEQ GE LE IF ELSE ANDAND OROR LEN FOR BREAK CONTINUE PLUSPLUS MINUSMINUS PLUSEQ MINUSEQ MULEQ DIVEQ
 
 %right '='
 %left OROR
@@ -31,7 +31,7 @@ import "github.com/tesujiro/exp_yacc/ast"
 %left EQEQ NEQ
 %left '>' '<' GE LE
 
-%left '+' '-'
+%left '+' '-' PLUSPLUS MINUSMINUS
 %left '*' '/' '%'
 %right UNARY
 
@@ -226,6 +226,30 @@ expr
     | expr '%' expr
     {
         $$ = &ast.BinOpExpr{Left: $1, Operator: "%", Right: $3}
+    }
+    | expr PLUSPLUS
+    {
+        $$ = &ast.CompExpr{Left: $1, Operator: "++"}
+    }
+    | expr MINUSMINUS
+    {
+        $$ = &ast.CompExpr{Left: $1, Operator: "--"}
+    }
+    | expr PLUSEQ expr
+    {
+        $$ = &ast.CompExpr{Left: $1, Operator: "+=", Right: $3}
+    }
+    | expr MINUSEQ expr
+    {
+        $$ = &ast.CompExpr{Left: $1, Operator: "-=", Right: $3}
+    }
+    | expr MULEQ expr
+    {
+        $$ = &ast.CompExpr{Left: $1, Operator: "*=", Right: $3}
+    }
+    | expr DIVEQ expr
+    {
+        $$ = &ast.CompExpr{Left: $1, Operator: "/=", Right: $3}
     }
     | expr EQEQ expr
     {

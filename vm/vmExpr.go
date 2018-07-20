@@ -161,6 +161,73 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 				return -1 * toFloat64(val), nil
 			}
 		}
+	case *ast.CompExpr:
+		/*
+			var left, right interface{}
+			var err error
+			if left, err = evalExpr(expr.(*ast.BinOpExpr).Left, env); err != nil {
+				return nil, err
+			}
+			if expr.(*ast.BinOpExpr).Right == nil {
+				right = nil
+			} else if right, err = evalExpr(expr.(*ast.BinOpExpr).Right, env); err != nil {
+				return nil, err
+			}
+			ltype := reflect.TypeOf(left)
+			rtype := reflect.TypeOf(right)
+			lvalue := reflect.ValueOf(left)
+			rvalue := reflect.ValueOf(right)
+		*/
+		left := expr.(*ast.CompExpr).Left
+		//right := expr.(*ast.CompExpr).Right
+		operator := expr.(*ast.CompExpr).Operator
+		switch operator {
+		case "++":
+			if ident, ok := left.(*ast.IdentExpr); ok {
+				v, err := env.Get(ident.Literal)
+				if err != nil {
+					return nil, err
+				}
+				switch reflect.TypeOf(v).Kind() {
+				case reflect.Int, reflect.Int32, reflect.Int64:
+					v = toInt(v) + 1
+				case reflect.Float32, reflect.Float64:
+					v = toFloat64(v) + 1.0
+				default:
+					return nil, errors.New("Invalid operation")
+				}
+				env.Set(ident.Literal, v)
+				return v, nil
+
+			} else {
+				return nil, errors.New("Invalid operation")
+			}
+		case "--":
+			if ident, ok := left.(*ast.IdentExpr); ok {
+				v, err := env.Get(ident.Literal)
+				if err != nil {
+					return nil, err
+				}
+				switch reflect.TypeOf(v).Kind() {
+				case reflect.Int, reflect.Int32, reflect.Int64:
+					v = toInt(v) - 1
+				case reflect.Float32, reflect.Float64:
+					v = toFloat64(v) - 1.0
+				default:
+					return nil, errors.New("Invalid operation")
+				}
+				env.Set(ident.Literal, v)
+				return v, nil
+
+			} else {
+				return nil, errors.New("Invalid operation")
+			}
+		case "+=":
+		case "-=":
+		case "*=":
+		case "/=":
+		}
+
 	case *ast.BinOpExpr:
 		var left, right interface{}
 		var err error
@@ -229,7 +296,6 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 				return reflect.AppendSlice(reflect.ValueOf(left), reflect.ValueOf(right)).Interface(), nil
 			case l_kind == reflect.Slice || l_kind == reflect.Array:
 				return reflect.Append(reflect.ValueOf(left), reflect.ValueOf(right)).Interface(), nil
-			//case l_kind == reflect.Int64 && r_kind == reflect.Int64:
 			case l_kind == reflect.Int && r_kind == reflect.Int:
 				return toInt(left) + toInt(right), nil
 			case l_kind == reflect.String || r_kind == reflect.String:

@@ -65,7 +65,15 @@ func TestNumbers(t *testing.T) {
 		{script: "a=1;b=2;a==1||b==2", result: true},
 		{script: "a=1;b=2;a==2||b==2", result: true},
 		{script: "12&&34", errMessage: "cannot convert to bool"},
-
+		// composite expression
+		{script: "a=10;a++", result: 11},
+		{script: "a=1.9;a++", result: 2.9},
+		{script: "10++", errMessage: "Invalid operation"},
+		{script: "a=\"a\";a++", errMessage: "Invalid operation"},
+		{script: "a=10;a--", result: 9},
+		{script: "a=2.9;a--", result: 1.9},
+		{script: "10--", errMessage: "Invalid operation"},
+		{script: "a=\"a\";a--", errMessage: "Invalid operation"},
 		// multi result
 		{script: "a,b=1,2;a", result: 1},
 		{script: "a,b=1,2;b", result: 2},

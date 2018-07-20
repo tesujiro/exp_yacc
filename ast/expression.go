@@ -35,6 +35,12 @@ type BinOpExpr struct {
 	Right    Expr
 }
 
+type CompExpr struct {
+	Left     Expr
+	Operator string
+	Right    Expr
+}
+
 type FuncExpr struct {
 	Name  string
 	Args  []string
