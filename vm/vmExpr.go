@@ -168,18 +168,13 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 			if left, err = evalExpr(expr.(*ast.BinOpExpr).Left, env); err != nil {
 				return nil, err
 			}
-			if expr.(*ast.BinOpExpr).Right == nil {
-				right = nil
-			} else if right, err = evalExpr(expr.(*ast.BinOpExpr).Right, env); err != nil {
-				return nil, err
-			}
 			ltype := reflect.TypeOf(left)
 			rtype := reflect.TypeOf(right)
 			lvalue := reflect.ValueOf(left)
 			rvalue := reflect.ValueOf(right)
 		*/
 		left := expr.(*ast.CompExpr).Left
-		//right := expr.(*ast.CompExpr).Right
+		right := expr.(*ast.CompExpr).Right
 		operator := expr.(*ast.CompExpr).Operator
 		switch operator {
 		case "++":
@@ -222,11 +217,17 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 			} else {
 				return nil, errors.New("Invalid operation")
 			}
-		case "+=":
-		case "-=":
-		case "*=":
-		case "/=":
 		}
+		/*
+			if right == nil {
+				right = &ast.NumExpr{Literal: "1"}
+			}
+		*/
+		result, err := evalExpr(&ast.BinOpExpr{Left: left, Operator: operator[0:1], Right: right}, env)
+		if err != nil {
+			return nil, err
+		}
+		return evalAssExpr(left, result, env)
 
 	case *ast.BinOpExpr:
 		var left, right interface{}

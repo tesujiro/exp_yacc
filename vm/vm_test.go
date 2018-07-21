@@ -74,6 +74,12 @@ func TestNumbers(t *testing.T) {
 		{script: "a=2.9;a--", result: 1.9},
 		{script: "10--", errMessage: "Invalid operation"},
 		{script: "a=\"a\";a--", errMessage: "Invalid operation"},
+		{script: "a=10;a+=2", result: 12},
+		{script: "a=10;a+=2.5", result: 12.5},
+		{script: "a=10;a+=2;a", result: 12},
+		{script: "a=10;a-=2;a", result: 8},
+		{script: "a=10;a*=2;a", result: 20},
+		{script: "a=10;a/=2;a", result: 5},
 		// multi result
 		{script: "a,b=1,2;a", result: 1},
 		{script: "a,b=1,2;b", result: 2},
