@@ -23,6 +23,8 @@ func Run(stmts []ast.Stmt, env *Env) (interface{}, error) {
 }
 
 func run(stmts []ast.Stmt, env *Env) (interface{}, error) {
+	//fmt.Println("run -> env.Dump()")
+	//env.Dump()
 	var result interface{}
 	var err error
 	for _, stmt := range stmts {
@@ -97,12 +99,14 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 		return evalExpr(stmt.(*ast.ExprStmt).Expr, env)
 	case *ast.IfStmt:
 		child := env.NewEnv()
-		defer child.Destroy()
+		//defer child.Destroy() // TODO:
 		result, err := evalExpr(stmt.(*ast.IfStmt).If, child)
 		if err != nil {
 			return nil, err
 		}
 		if result.(bool) {
+			//fmt.Println("If then -> env.Dump()")
+			//child.Dump()
 			result, err = run(stmt.(*ast.IfStmt).Then, child)
 			if err != nil {
 				return result, err
@@ -153,7 +157,7 @@ func runSingleStmt(stmt ast.Stmt, env *Env) (interface{}, error) {
 		}
 	case *ast.LoopStmt:
 		newEnv := env.NewEnv()
-		defer newEnv.Destroy()
+		//defer newEnv.Destroy() // TODO:
 		for {
 			exp := stmt.(*ast.LoopStmt).Expr
 			if exp != nil {

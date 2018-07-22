@@ -198,7 +198,11 @@ func TestFuncCall(t *testing.T) {
 		{script: "func f(x){if x==1 {return 1} else {return x*f(x-1)}};f(3)", result: 6},
 		{script: "func f(x){if x==1 {return func(){ return 1}} else { return func(){ return x*f(x-1)() }}};f(1)()", result: 1},
 		{script: "func f(x){if x==1 {return func(){ return 1}} else { return func(){ return x*f(x-1)() }}};f(3)()", result: 6}, //ERROR
-		//{script: "func f(x){return func() {if x==1 {return 1} else { return f(x) }}};f(2)()", result: 6},       //ERROR
+		{script: "func f(x){if x==1 {return func(){ return x}} else { return func(){ return x*(x-1) }}};f(1)()", result: 1},
+		{script: "func f(x){return func(){ return x}};f(1)()", result: 1},
+		//PROBLEM
+		{script: "func(x){return func(){return x}}(1)()", result: 1},
+		{script: "func(x){if true {return func(){return x}}}(1)()", result: 1},
 
 		// error while execute function
 		{script: "func (x){return x+z}(10)", errMessage: "unknown symbol 'z'"},

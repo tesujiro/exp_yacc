@@ -49,7 +49,6 @@ func defineFunc(funcExpr *ast.FuncExpr, env *Env) (interface{}, error) {
 			nilValue := reflect.New(reflect.TypeOf((*interface{})(nil)).Elem()).Elem()
 			return []reflect.Value{reflect.ValueOf(reflect.ValueOf(nilValue)), reflect.ValueOf(errv)}
 		} else {
-			newEnv.Dump()
 			var errorType = reflect.ValueOf([]error{nil}).Index(0).Type()
 			var reflectValueErrorNilValue = reflect.ValueOf(reflect.New(errorType).Elem())
 			debug.Println("return value:\t", rv)
@@ -72,6 +71,7 @@ func defineFunc(funcExpr *ast.FuncExpr, env *Env) (interface{}, error) {
 
 func callAnonymousFunc(anonymousCallExpr *ast.AnonymousCallExpr, env *Env) (interface{}, error) {
 	ace := anonymousCallExpr
+	//fmt.Printf("anonCallExpr:%#v\n", ace)
 	debug.Printf("anonCallExpr:%#v\n", ace)
 	if result, err := evalExpr(ace.Expr, env); err != nil {
 		return nil, err
