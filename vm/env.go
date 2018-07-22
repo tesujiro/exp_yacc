@@ -84,3 +84,21 @@ func (e *Env) GetValue(k string) (reflect.Value, error) {
 	return e.parent.GetValue(k)
 }
 */
+
+func (e *Env) Dump() {
+	var dump_helper func(*Env) string
+	dump_helper = func(e *Env) string {
+		var indent string
+		if e.parent == nil {
+			indent = ""
+		} else {
+			indent = dump_helper(e.parent)
+		}
+		for k, v := range e.env {
+			fmt.Println(indent, k, ":", v)
+		}
+		return indent + "\t"
+	}
+	dump_helper(e)
+	return
+}

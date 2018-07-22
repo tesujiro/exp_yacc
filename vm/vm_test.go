@@ -194,8 +194,10 @@ func TestFuncCall(t *testing.T) {
 		{script: "func Fibo(){x,y=0,1;return func(){x,y=y,x+y;return y}};f=Fibo();f();f();f();f();", result: 5},
 		// higher order & recursive
 		{script: "func mod(x){return func f(y){ if y<x {return y} else { return f(y-x) }}};mod3=mod(3);mod3(11);", result: 2},
-		{script: "func f(x){if x==1 {return 1} else { return func(){ return f(x-1)()*x }}};f(1)", result: 1},
-		//{script: "func f(x){if x==1 {return 1} else { return func(){ return f(x-1)()*x }}};f(2)()", result: 6}, //ERROR
+		{script: "func f(x){if x==1 {return 1} else {return x*f(x-1)}};f(1)", result: 1},
+		{script: "func f(x){if x==1 {return 1} else {return x*f(x-1)}};f(3)", result: 6},
+		{script: "func f(x){if x==1 {return func(){ return 1}} else { return func(){ return x*f(x-1)() }}};f(1)()", result: 1},
+		{script: "func f(x){if x==1 {return func(){ return 1}} else { return func(){ return x*f(x-1)() }}};f(3)()", result: 6}, //ERROR
 		//{script: "func f(x){return func() {if x==1 {return 1} else { return f(x) }}};f(2)()", result: 6},       //ERROR
 
 		// error while execute function
