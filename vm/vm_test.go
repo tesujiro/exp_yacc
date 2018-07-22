@@ -173,7 +173,7 @@ func TestFuncCall(t *testing.T) {
 		{script: "func Add(a1,a2){return a1+a2;};Add(\"hello,\",\"world!\")", result: "hello,world!"},
 		{script: "func two(){1; return 2;3;};x=two();x", result: 2},
 		{script: "Hundred=func Fn(){return 100;};a=Hundred();a", result: 100},
-		// multi result
+		// multi result function
 		{script: "func Cross(a1,a2){return a2,a1;};Cross(1,5)", result: []interface{}{5, 1}},
 		{script: "func Cross(a1,a2){return a2,a1;};x,y=Cross(1,5);x", result: 5},
 		{script: "func Cross(a1,a2){return a2,a1;};x,y=Cross(1,5);y", result: 1},
@@ -184,12 +184,19 @@ func TestFuncCall(t *testing.T) {
 		{script: "func (x){return x+100;}()", errMessage: "function wants 1 arguments but received 0"},
 		{script: "(1+1)(10)", errMessage: "cannot call type int"},
 		{script: "Fn=func (x){return func(y) {return x*10+y};};Fn2=Fn(10);Fn2(2)", result: 102},
+		// recursive call
+		{script: "func Factorial(x){if x==1 {1} else { x*Factorial(x-1)}};Factorial(3)", result: 6},
+		{script: "func Factorial(x){if x==1 {return 1} else { return x*Factorial(x-1)}};Factorial(3)", result: 6},
+		// higher order function
 		{script: "func (x){return func(y) {return x*10+y};}()(2)", errMessage: "function wants 1 arguments but received 0"},
 		{script: "func (x){return func(y) {return x*10+y};}(10)()", errMessage: "function wants 1 arguments but received 0"},
 		{script: "func (x){return func(y) {return x*10+y};}(10)(2)", result: 102},
-		// recursive call
-		{script: "func rec(x){if x==1 {1} else { x*rec(x-1)}};rec(3)", result: 6},
-		{script: "func rec(x){if x==1 {return 1} else { return x*rec(x-1)}};rec(3)", result: 6},
+		{script: "func Fibo(){x,y=0,1;return func(){x,y=y,x+y;return y}};f=Fibo();f();f();f();f();", result: 5},
+		// higher order & recursive
+		{script: "func mod(x){return func f(y){ if y<x {return y} else { return f(y-x) }}};mod3=mod(3);mod3(11);", result: 2},
+		{script: "func f(x){if x==1 {return 1} else { return func(){ return f(x-1)()*x }}};f(1)", result: 1},
+		//{script: "func f(x){if x==1 {return 1} else { return func(){ return f(x-1)()*x }}};f(2)()", result: 6}, //ERROR
+		//{script: "func f(x){return func() {if x==1 {return 1} else { return f(x) }}};f(2)()", result: 6},       //ERROR
 
 		// error while execute function
 		{script: "func (x){return x+z}(10)", errMessage: "unknown symbol 'z'"},
