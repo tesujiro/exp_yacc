@@ -19,11 +19,19 @@ var dbg = flag.Bool("d", false, "debug option")
 var ast_dump = flag.Bool("a", false, "AST dump option")
 var mem_prof = flag.Bool("m", false, "Memory Profile")
 var cpu_prof = flag.Bool("c", false, "CPU Profile")
+var ver = flag.Bool("v", false, "version")
 var file string
+
+const version = "0.0.1"
 
 func main() {
 	flag.Parse()
 	file = flag.Arg(0)
+
+	if *ver {
+		fmt.Println("Version:", version)
+		os.Exit(0)
+	}
 
 	if *dbg {
 		debug.On()
