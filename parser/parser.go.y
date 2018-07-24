@@ -12,6 +12,7 @@ import "github.com/tesujiro/exp_yacc/ast"
     stmts []ast.Stmt
     expr  ast.Expr
     exprs  []ast.Expr
+    map_expr map[ast.Expr]ast.Expr
     ident_args []string
 }
 
@@ -21,6 +22,7 @@ import "github.com/tesujiro/exp_yacc/ast"
 %type<stmt_if>   stmt_if
 %type<expr>   expr
 %type<exprs>   exprs
+%type<map_expr> map_expr
 %type<ident_args>   ident_args
 %token<token> IDENT NUMBER STRING TRUE FALSE NIL FUNC RETURN EQEQ NEQ GE LE IF ELSE ANDAND OROR LEN FOR BREAK CONTINUE PLUSPLUS MINUSMINUS PLUSEQ MINUSEQ MULEQ DIVEQ
 
@@ -184,6 +186,10 @@ expr
     {
     	$$ = &ast.ArrayExpr{Exprs: $3}
     }
+    | '{' opt_newLines map_expr opt_newLines '}'
+    {
+    	$$ = &ast.MapExpr{MapExpr: $3}
+    }
     | IDENT '[' expr ']'
     {
         $$ = &ast.ItemExpr{Value: &ast.IdentExpr{Literal: $1.Literal}, Index:$3}
@@ -279,6 +285,24 @@ expr
     | expr LE expr
     {
         $$ = &ast.BinOpExpr{Left: $1, Operator: "<=", Right: $3}
+    }
+
+map_expr
+/*
+    :
+    {
+        $$= make(map[ast.Expr]ast.Expr)
+    }
+    */
+    : expr ':' expr
+    {
+        mapExpr := make(map[ast.Expr]ast.Expr)
+	mapExpr[$1]=$3
+	$$=mapExpr
+    }
+    | map_expr ',' opt_newLines expr ':' expr
+    {
+    	$1[$4] = $6
     }
 
 ident_args

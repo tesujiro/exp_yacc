@@ -126,6 +126,14 @@ func TestNumbers(t *testing.T) {
 		{script: "[1,2,3]+[4,5,6]", result: []interface{}{1, 2, 3, 4, 5, 6}},
 		{script: "[1,2,3]+4", result: []interface{}{1, 2, 3, 4}},
 		{script: "[1,2,3]+\"4\"", result: []interface{}{1, 2, 3, "4"}},
+		// map
+		{script: "m={1:\"aaa\",2:\"bbb\",3:\"ccc\"};m", result: map[interface{}]interface{}{1: "aaa", 2: "bbb", 3: "ccc"}},
+		{script: "m={1:\"aaa\",2:\"bbb\",3:\"ccc\"};m[3]", result: "ccc"},
+		{script: "m={1:\"aaa\",2:\"bbb\",3:\"ccc\"};m[0]", result: nil},
+		{script: "m={1:\"aaa\",2:\"bbb\",3:\"ccc\"};len(m)", result: 3},
+		{script: "m={1:\"aaa\",2:\"bbb\",3:\"ccc\"};m[3]=\"xxx\";m", result: map[interface{}]interface{}{1: "aaa", 2: "bbb", 3: "xxx"}},
+		{script: "m={1:\"aaa\",2:\"bbb\",3:\"ccc\"};m[4]=\"xxx\";m", result: map[interface{}]interface{}{1: "aaa", 2: "bbb", 3: "ccc", 4: "xxx"}},
+		{script: "m={1:\"aaa\",2:\"bbb\",3:\"ccc\"};m[4]=\"xxx\";m[3]+m[4]", result: "cccxxx"},
 	}
 	for _, test := range tests {
 		env := NewEnv()

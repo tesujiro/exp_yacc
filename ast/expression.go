@@ -70,3 +70,7 @@ type ItemExpr struct {
 	Value Expr
 	Index Expr
 }
+
+type MapExpr struct {
+	MapExpr map[Expr]Expr
+}

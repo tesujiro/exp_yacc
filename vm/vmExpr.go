@@ -90,7 +90,7 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 			return nil, err
 		}
 		switch reflect.ValueOf(result).Kind() {
-		case reflect.Slice, reflect.Array, reflect.String:
+		case reflect.Slice, reflect.Array, reflect.String, reflect.Map:
 			return reflect.ValueOf(result).Len(), nil
 		default:
 			return nil, fmt.Errorf("type %s does not support len operation", reflect.ValueOf(result).Kind().String())
@@ -139,10 +139,39 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 				}
 				return reflect.ValueOf(value).Index(i).Interface(), nil
 			}
+		case reflect.Map:
+			m, ok := value.(map[interface{}]interface{})
+			if !ok {
+				return nil, errors.New("value cannot convert to map")
+			}
+			v, ok := m[index]
+			if !ok {
+				return nil, nil
+			}
+			return v, nil
 
 		default:
 			return nil, errors.New("type " + reflect.ValueOf(value).Kind().String() + " does not support index operation")
 		}
+	case *ast.MapExpr:
+		exprs := expr.(*ast.MapExpr).MapExpr
+		m := make(map[interface{}]interface{}, len(exprs))
+		//fmt.Println("map len:", len(exprs))
+		var keyResult, valResult interface{}
+		var err error
+		for keyExpr, valExpr := range exprs {
+			keyResult, err = evalExpr(keyExpr, env)
+			if err != nil {
+				return nil, err
+			}
+			valResult, err = evalExpr(valExpr, env)
+			if err != nil {
+				return nil, err
+			}
+			m[keyResult] = valResult
+		}
+		return m, nil
+
 	case *ast.UnaryExpr:
 		var val interface{}
 		var err error

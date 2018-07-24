@@ -229,6 +229,23 @@ func evalAssExpr(lexp ast.Expr, val interface{}, env *Env) (interface{}, error) 
 				reflect.ValueOf(value).Index(i).Set(reflect.ValueOf(val))
 				return val, nil
 			}
+		case reflect.Map:
+			m, ok := value.(map[interface{}]interface{})
+			if !ok {
+				return nil, errors.New("value cannot convert to map")
+			}
+			_, ok = m[index]
+			if ok {
+				m[index] = val
+				return val, nil
+			} else {
+				newMap := make(map[interface{}]interface{}, len(m)+1)
+				newMap[index] = val
+				for k, v := range m {
+					newMap[k] = v
+				}
+				return evalAssExpr(lexp.(*ast.ItemExpr).Value, newMap, env)
+			}
 		default:
 			return nil, errors.New("type " + reflect.TypeOf(value).Kind().String() + " does not support index operation")
 		}
