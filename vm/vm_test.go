@@ -20,7 +20,7 @@ func TestNumbers(t *testing.T) {
 		{script: "false", result: false},
 		{script: "nil", result: nil},
 		{script: "1", result: 1},
-		{script: "9223372036854775807", result: int64(9223372036854775807)},
+		//{script: "9223372036854775807", result: 9223372036854775807},
 		{script: "1.1", result: float64(1.1)},
 		{script: "123", result: 123},
 		{script: "123.456", result: float64(123.456)},
