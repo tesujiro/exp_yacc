@@ -63,7 +63,11 @@ func evalExpr(expr ast.Expr, env *Env) (interface{}, error) {
 		}
 		//if i, err := strconv.ParseInt(lit, 10, 64); err != nil {
 		if i, err := strconv.ParseInt(lit, 10, 0); err != nil {
-			return 0, err
+			if i, err := strconv.ParseInt(lit, 10, 64); err != nil {
+				return 0, err
+			} else {
+				return int64(i), nil
+			}
 		} else {
 			return int(i), nil
 		}
